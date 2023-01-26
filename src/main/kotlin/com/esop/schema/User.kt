@@ -11,7 +11,7 @@ class User ( var firstName: String,
     val userWallet: Wallet = Wallet()
     val userNonPerfInventory: Inventory = Inventory(type = "NON_PERFORMANCE")
     val userPerformanceInventory: Inventory = Inventory(type = "PERFORMANCE")
-    val vestedInventory: Inventory = Inventory(type = "VESTED")
+    val vestedInventory: VestedInventory = VestedInventory(type = "VESTED")
 //    val orderList: ArrayList<Order> = ArrayList<Order>()
     val orderList: ArrayList<History> = ArrayList<History>()
 
@@ -28,6 +28,10 @@ class User ( var firstName: String,
             return "${inventoryData.quantity} Performance ESOPs added to account."
         }
         return "None"
+    }
+
+    fun addToNonPerfInventory(inventory: Long){
+        userNonPerfInventory.addESOPsToInventory(inventory)
     }
 
 }

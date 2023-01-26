@@ -136,6 +136,10 @@ class UserService {
                     "type" to "NON_PERFORMANCE",
                     "free" to user.userNonPerfInventory.getFreeInventory(),
                     "locked" to user.userNonPerfInventory.getLockedInventory()
+                ),
+                mapOf(
+                    "type" to "VESTED",
+                    "ESOPs" to user.vestedInventory.getVestInventory()
                 )
             )
         )

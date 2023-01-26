@@ -1,7 +1,7 @@
 package com.esop.service
 
 
-import com.esop.constant.errors
+import com.esop.constant.*
 import com.esop.schema.History
 import com.esop.schema.Order
 import com.esop.schema.OrderFilledLog
@@ -10,6 +10,7 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlin.math.round
 import com.esop.service.UserService
+import kotlin.math.floor
 
 @Singleton
 class OrderService{
@@ -126,6 +127,7 @@ class OrderService{
         }
 
         fun placeOrder(order: Order): Map<String, Any> {
+
             var inventoryPriority = 2
             if (order.inventoryType == "PERFORMANCE") {
                 inventoryPriority -= 1
@@ -191,6 +193,7 @@ class OrderService{
             }
             return mapOf("orderId" to order.orderID)
         }
+
 
         fun orderHistory(userName: String): Any {
             val userErrors = ArrayList<String>()
