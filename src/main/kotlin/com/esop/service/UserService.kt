@@ -149,7 +149,7 @@ class UserService {
             if ( inventoryData.inventoryType.toString().uppercase() != "NON_PERFORMANCE" && inventoryData.inventoryType.toString().uppercase() != "PERFORMANCE" ){
                 errorList.add(errors["INVALID_TYPE"].toString())
             }
-            else if ( !check_username(userName) ){
+            if ( !check_username(userName) ){
                 errorList.add(errors["USER_DOES_NOT_EXISTS"].toString())
             }
 

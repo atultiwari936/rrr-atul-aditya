@@ -26,3 +26,5 @@ val success_response = mapOf(
 const val MAX_WALLET_CAPACITY = 100_00_00_000L
 
 const val MAX_INVENTORY_CAPACITY = 1_00_00_000L
+
+const val VESTING_PERIOD = 30000
