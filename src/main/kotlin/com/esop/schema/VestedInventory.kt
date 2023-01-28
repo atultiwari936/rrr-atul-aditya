@@ -4,7 +4,7 @@ class VestedInventory (
     private var vestInventory: Long = 0L,
     private var timestamp: Long = System.currentTimeMillis(),
     private var movedVestedInventory: Long = 0L,
-    private var type: String)
+    private var type: String = "Vested")
 {
 
     fun getTimeStamp():Long{
