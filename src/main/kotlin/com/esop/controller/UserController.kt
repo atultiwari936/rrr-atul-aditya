@@ -122,7 +122,6 @@ class UserController {
             return HttpResponse.badRequest(mapOf("errors" to validationErrors))
         }
 
-
         val newInventory = this.userService.addingInventory(body,userName)
 
         if(newInventory["error"] != null) {
