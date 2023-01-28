@@ -4,7 +4,6 @@ import com.esop.constant.FIRST_VESTING_PERIOD
 import com.esop.constant.FOURTH_VESTING_PERIOD
 import com.esop.constant.SECOND_VESTING_PERIOD
 import com.esop.constant.THIRD_VESTING_PERIOD
-import com.esop.schema.User
 import com.esop.service.UserService
 import io.micronaut.runtime.Micronaut.run
 import kotlin.math.floor
