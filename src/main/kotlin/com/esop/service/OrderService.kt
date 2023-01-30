@@ -2,9 +2,10 @@ package com.esop.service
 
 
 import com.esop.constant.errors
-import com.esop.schema.*
+import com.esop.schema.History
+import com.esop.schema.Order
+import com.esop.schema.OrderFilledLog
 import com.esop.schema.PlatformFee.Companion.addPlatformFee
-import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlin.math.round
 
@@ -99,6 +100,124 @@ class OrderService{
 
         }
 
+        private fun performBuyOrder(order: Order){
+            buyOrders.add(order)
+            val sortedSellOrders = sortAscending()
+
+            for (bestSellOrder in sortedSellOrders) {
+                if(order.remainingQuantity == 0L){
+                    break
+                }
+                if ((order.price >= bestSellOrder.price) && (bestSellOrder.remainingQuantity > 0)) {
+                    val prevQuantity = order.remainingQuantity
+                    if(order.remainingQuantity < bestSellOrder.remainingQuantity){
+
+                        val buyOrderLog = OrderFilledLog(order.remainingQuantity,bestSellOrder.price,null, bestSellOrder.userName,null)
+                        val sellOrderLog = OrderFilledLog(order.remainingQuantity,bestSellOrder.price,bestSellOrder.esopType,null,order.userName)
+
+                        bestSellOrder.remainingQuantity = bestSellOrder.remainingQuantity - order.remainingQuantity
+                        bestSellOrder.orderStatus = "PARTIAL"
+                        bestSellOrder.orderFilledLogs.add(sellOrderLog)
+
+                        order.remainingQuantity = 0
+                        order.orderStatus = "COMPLETED"
+                        order.orderFilledLogs.add(buyOrderLog)
+                        buyOrders.remove(order)
+
+                    }else if (order.remainingQuantity > bestSellOrder.remainingQuantity){
+
+                        val buyOrderLog = OrderFilledLog(bestSellOrder.remainingQuantity, order.price,null,bestSellOrder.userName,null)
+                        val sellOrderLog = OrderFilledLog(bestSellOrder.remainingQuantity, order.price,bestSellOrder.esopType,null)
+
+                        order.remainingQuantity = order.remainingQuantity - bestSellOrder.remainingQuantity
+                        order.orderStatus = "PARTIAL"
+                        order.orderFilledLogs.add(sellOrderLog)
+
+                        bestSellOrder.remainingQuantity = 0
+                        bestSellOrder.orderStatus = "COMPLETED"
+                        bestSellOrder.orderFilledLogs.add(buyOrderLog)
+                        sellOrders.remove(bestSellOrder)
+
+                    }else{
+                        val buyOrderLog = OrderFilledLog(bestSellOrder.remainingQuantity, bestSellOrder.price,null,bestSellOrder.userName)
+                        val sellOrderLog = OrderFilledLog(order.remainingQuantity, bestSellOrder.price,bestSellOrder.esopType,order.userName,null)
+
+                        bestSellOrder.remainingQuantity = 0
+                        bestSellOrder.orderStatus = "COMPLETED"
+                        bestSellOrder.orderFilledLogs.add(buyOrderLog)
+                        sellOrders.remove(bestSellOrder)
+
+                        order.remainingQuantity = 0
+                        order.orderStatus = "COMPLETED"
+                        order.orderFilledLogs.add(sellOrderLog)
+                        buyOrders.remove(order)
+
+                    }
+
+                    updateOrderDetailsForBuy(order.userName, prevQuantity ,order.remainingQuantity, bestSellOrder, order)
+
+                }
+            }
+        }
+
+        private fun performSellOrder(order: Order){
+            sellOrders.add(order)
+            val sortedBuyOrders = buyOrders.sortedWith(compareByDescending<Order> { it.price }.thenBy { it.timeStamp })
+
+            for (bestBuyOrder in sortedBuyOrders) {
+                if(order.remainingQuantity == 0L){
+                    break
+                }
+                if ((order.price <= bestBuyOrder.price) && (bestBuyOrder.remainingQuantity > 0)) {
+                    val prevQuantity = order.remainingQuantity
+                    if(order.remainingQuantity < bestBuyOrder.remainingQuantity){
+
+                        val buyOrderLog = OrderFilledLog(order.remainingQuantity,bestBuyOrder.price,null,order.userName,null)
+                        val sellOrderLog = OrderFilledLog(order.remainingQuantity,bestBuyOrder.price,order.esopType,null,bestBuyOrder.userName)
+
+                        bestBuyOrder.remainingQuantity = bestBuyOrder.remainingQuantity - order.remainingQuantity
+                        bestBuyOrder.orderStatus = "PARTIAL"
+                        bestBuyOrder.orderFilledLogs.add(buyOrderLog)
+
+                        order.remainingQuantity = 0
+                        order.orderStatus = "COMPLETED"
+                        order.orderFilledLogs.add(sellOrderLog)
+                        sellOrders.remove(order)
+
+                    }else if (order.remainingQuantity > bestBuyOrder.remainingQuantity){
+
+                        val buyOrderLog = OrderFilledLog(bestBuyOrder.remainingQuantity, order.price,null,order.userName,null)
+                        val sellOrderLog = OrderFilledLog(bestBuyOrder.remainingQuantity, order.price,order.esopType,null,bestBuyOrder.userName)
+
+                        order.remainingQuantity = order.remainingQuantity - bestBuyOrder.remainingQuantity
+                        order.orderStatus = "PARTIAL"
+                        order.orderFilledLogs.add(sellOrderLog)
+
+                        bestBuyOrder.remainingQuantity = 0
+                        bestBuyOrder.orderStatus = "COMPLETED"
+                        bestBuyOrder.orderFilledLogs.add(buyOrderLog)
+                        buyOrders.remove(bestBuyOrder)
+
+                    }else{
+                        val buyOrderLog = OrderFilledLog(bestBuyOrder.remainingQuantity, order.price,null,order.userName,null)
+                        val sellOrderLog = OrderFilledLog(order.remainingQuantity, order.price,order.esopType,null,bestBuyOrder.userName)
+
+                        bestBuyOrder.remainingQuantity = 0
+                        bestBuyOrder.orderStatus = "COMPLETED"
+                        bestBuyOrder.orderFilledLogs.add(buyOrderLog)
+                        buyOrders.remove(bestBuyOrder)
+
+                        order.remainingQuantity = 0
+                        order.orderStatus = "COMPLETED"
+                        order.orderFilledLogs.add(sellOrderLog)
+                        sellOrders.remove(order)
+
+                    }
+                    updateOrderDetailsForSell(order.userName, prevQuantity ,order.remainingQuantity, bestBuyOrder, order)
+                }
+            }
+        }
+
         private fun sortAscending():List<Order>{
             return sellOrders.sortedWith<Order>(object : Comparator<Order> {
                 override fun compare(o1: Order, o2: Order): Int {
@@ -135,128 +254,9 @@ class OrderService{
             order.remainingQuantity = order.quantity
 
             if (order.type == "BUY") {
-                buyOrders.add(order)
-                val sortedSellOrders = sortAscending()
-
-
-                for (bestSellOrder in sortedSellOrders) {
-                    if(order.remainingQuantity == 0L){
-                        break
-                    }
-                    if ((order.price >= bestSellOrder.price) && (bestSellOrder.remainingQuantity > 0)) {
-                        val prevQuantity = order.remainingQuantity
-                        if(order.remainingQuantity < bestSellOrder.remainingQuantity){
-
-                            val buyOrderLog = OrderFilledLog(order.remainingQuantity,bestSellOrder.price,null, bestSellOrder.userName,null)
-                            val sellOrderLog = OrderFilledLog(order.remainingQuantity,bestSellOrder.price,bestSellOrder.esopType,null,order.userName)
-
-                            bestSellOrder.remainingQuantity = bestSellOrder.remainingQuantity - order.remainingQuantity
-                            bestSellOrder.orderStatus = "PARTIAL"
-                            bestSellOrder.orderFilledLogs.add(sellOrderLog)
-
-                            order.remainingQuantity = 0
-                            order.orderStatus = "COMPLETED"
-                            order.orderFilledLogs.add(buyOrderLog)
-                            buyOrders.remove(order)
-
-                            updateOrderDetailsForBuy(order.userName, prevQuantity, order.remainingQuantity, bestSellOrder, order)
-
-                        }else if (order.remainingQuantity > bestSellOrder.remainingQuantity){
-
-                            val buyOrderLog = OrderFilledLog(bestSellOrder.remainingQuantity, order.price,null,bestSellOrder.userName,null)
-                            val sellOrderLog = OrderFilledLog(bestSellOrder.remainingQuantity, order.price,bestSellOrder.esopType,null)
-
-                            order.remainingQuantity = order.remainingQuantity - bestSellOrder.remainingQuantity
-                            order.orderStatus = "PARTIAL"
-                            order.orderFilledLogs.add(sellOrderLog)
-
-                            bestSellOrder.remainingQuantity = 0
-                            bestSellOrder.orderStatus = "COMPLETED"
-                            bestSellOrder.orderFilledLogs.add(buyOrderLog)
-                            sellOrders.remove(bestSellOrder)
-
-                            updateOrderDetailsForBuy(order.userName, prevQuantity ,order.remainingQuantity, bestSellOrder, order)
-                        }else{
-                            val buyOrderLog = OrderFilledLog(bestSellOrder.remainingQuantity, bestSellOrder.price,null,bestSellOrder.userName)
-                            val sellOrderLog = OrderFilledLog(order.remainingQuantity, bestSellOrder.price,bestSellOrder.esopType,order.userName,null)
-
-                            bestSellOrder.remainingQuantity = 0
-                            bestSellOrder.orderStatus = "COMPLETED"
-                            bestSellOrder.orderFilledLogs.add(buyOrderLog)
-                            sellOrders.remove(bestSellOrder)
-
-                            order.remainingQuantity = 0
-                            order.orderStatus = "COMPLETED"
-                            order.orderFilledLogs.add(sellOrderLog)
-                            buyOrders.remove(order)
-
-                            updateOrderDetailsForBuy(order.userName, prevQuantity ,order.remainingQuantity, bestSellOrder, order)
-
-                        }
-
-                    }
-                }
+                performBuyOrder(order)
             } else {
-                sellOrders.add(order)
-                val sortedBuyOrders = buyOrders.sortedWith(compareByDescending<Order> { it.price }.thenBy { it.timeStamp })
-
-                for (bestBuyOrder in sortedBuyOrders) {
-                    if(order.remainingQuantity == 0L){
-                        break
-                    }
-                    if ((order.price <= bestBuyOrder.price) && (bestBuyOrder.remainingQuantity > 0)) {
-                        val prevQuantity = order.remainingQuantity
-                        if(order.remainingQuantity < bestBuyOrder.remainingQuantity){
-
-                            val buyOrderLog = OrderFilledLog(order.remainingQuantity,bestBuyOrder.price,null,order.userName,null)
-                            val sellOrderLog = OrderFilledLog(order.remainingQuantity,bestBuyOrder.price,order.esopType,null,bestBuyOrder.userName)
-
-                            bestBuyOrder.remainingQuantity = bestBuyOrder.remainingQuantity - order.remainingQuantity
-                            bestBuyOrder.orderStatus = "PARTIAL"
-                            bestBuyOrder.orderFilledLogs.add(buyOrderLog)
-
-                            order.remainingQuantity = 0
-                            order.orderStatus = "COMPLETED"
-                            order.orderFilledLogs.add(sellOrderLog)
-                            sellOrders.remove(order)
-
-                            updateOrderDetailsForSell(order.userName, prevQuantity, order.remainingQuantity,  bestBuyOrder, order)
-
-                        }else if (order.remainingQuantity > bestBuyOrder.remainingQuantity){
-
-                            val buyOrderLog = OrderFilledLog(bestBuyOrder.remainingQuantity, order.price,null,order.userName,null)
-                            val sellOrderLog = OrderFilledLog(bestBuyOrder.remainingQuantity, order.price,order.esopType,null,bestBuyOrder.userName)
-
-
-                            order.remainingQuantity = order.remainingQuantity - bestBuyOrder.remainingQuantity
-                            order.orderStatus = "PARTIAL"
-                            order.orderFilledLogs.add(sellOrderLog)
-
-                            bestBuyOrder.remainingQuantity = 0
-                            bestBuyOrder.orderStatus = "COMPLETED"
-                            bestBuyOrder.orderFilledLogs.add(buyOrderLog)
-                            buyOrders.remove(bestBuyOrder)
-
-                            updateOrderDetailsForSell(order.userName, prevQuantity ,order.remainingQuantity, bestBuyOrder, order)
-                        }else{
-                            val buyOrderLog = OrderFilledLog(bestBuyOrder.remainingQuantity, order.price,null,order.userName,null)
-                            val sellOrderLog = OrderFilledLog(order.remainingQuantity, order.price,order.esopType,null,bestBuyOrder.userName)
-
-                            bestBuyOrder.remainingQuantity = 0
-                            bestBuyOrder.orderStatus = "COMPLETED"
-                            bestBuyOrder.orderFilledLogs.add(buyOrderLog)
-                            buyOrders.remove(bestBuyOrder)
-
-                            order.remainingQuantity = 0
-                            order.orderStatus = "COMPLETED"
-                            order.orderFilledLogs.add(sellOrderLog)
-                            sellOrders.remove(order)
-
-                            updateOrderDetailsForSell(order.userName, prevQuantity ,order.remainingQuantity, bestBuyOrder, order)
-
-                        }
-                    }
-                }
+                performSellOrder(order)
             }
 
             UserService.userList.get(order.userName)?.orderList?.add(order)
