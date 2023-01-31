@@ -9,6 +9,9 @@ class PlatformFee{
 
         fun addPlatformFee(fee: Long){
 
+            if(fee < 0)
+                return
+
             platFee += fee.toBigInteger()
 
         }
