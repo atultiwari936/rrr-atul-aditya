@@ -13,21 +13,21 @@ class Inventory(
         return freeInventory + lockedInventory
     }
 
-    fun willInventoryOverflowOnAdding(quantity: Long): Boolean {
+    fun willInventoryOverflowOnAdding( quantity: Long ): Boolean {
         return quantity + totalESOPQuantity() > MAX_INVENTORY_CAPACITY
     }
 
-    fun assertInventoryWillNotOverflowOnAdding(quantity: Long) {
+    fun assertInventoryWillNotOverflowOnAdding( quantity: Long ) {
         if (willInventoryOverflowOnAdding(quantity)) throw InventoryLimitExceededException()
     }
 
-    fun addESOPsToInventory(esopsToBeAdded: Long) {
+    fun addESOPsToInventory( esopsToBeAdded: Long ) {
         assertInventoryWillNotOverflowOnAdding(esopsToBeAdded)
 
         this.freeInventory = this.freeInventory + esopsToBeAdded
     }
 
-    fun moveESOPsFromFreeToLockedState(esopsToBeLocked: Long): String {
+    fun moveESOPsFromFreeToLockedState( esopsToBeLocked: Long ): String {
         if (this.freeInventory < esopsToBeLocked) {
             return "Insufficient ${type.toLowerCase()} inventory.";
         }
@@ -44,7 +44,7 @@ class Inventory(
         return lockedInventory;
     }
 
-    fun removeESOPsFromLockedState( esopsToBeRemoved: Long){
+    fun removeESOPsFromLockedState( esopsToBeRemoved: Long ){
         this.lockedInventory = this.lockedInventory - esopsToBeRemoved
     }
 }
