@@ -1,7 +1,6 @@
 package com.esop
 
 import io.micronaut.http.HttpStatus
-import kotlin.RuntimeException
 
 open class HttpException(val status: HttpStatus, message: String): RuntimeException(message)
 
