@@ -13,6 +13,9 @@ class PlatformFee{
 
         }
 
+        fun getPlatformFee(): BigInteger {
+            return platFee
+        }
     }
 
 

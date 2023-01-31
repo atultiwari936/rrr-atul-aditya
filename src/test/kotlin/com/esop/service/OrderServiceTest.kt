@@ -1,6 +1,7 @@
 package com.esop.service
 
 import com.esop.schema.Order
+import com.esop.schema.PlatformFee
 import com.esop.schema.User
 import com.esop.service.OrderService.Companion.buyOrders
 import com.esop.service.OrderService.Companion.placeOrder
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.math.BigInteger
 
 class OrderServiceTest {
     @BeforeEach
@@ -31,6 +33,7 @@ class OrderServiceTest {
         buyOrders.clear()
         sellOrders.clear()
         userList.clear()
+        PlatformFee.platFee = BigInteger("0")
     }
 
     @Test
@@ -77,6 +80,7 @@ class OrderServiceTest {
         assertEquals(10, userList["sankar"]!!.userNonPerfInventory.getFreeInventory())
         assertEquals(98, userList["kajal"]!!.userWallet.getFreeMoney())
         assertEquals(0, userList["sankar"]!!.userWallet.getFreeMoney())
+        assertEquals(BigInteger("2"),PlatformFee.getPlatformFee())
     }
 
     @Test
@@ -115,6 +119,7 @@ class OrderServiceTest {
             "COMPLETED",
             userList["arun"]!!.orderList[userList["arun"]!!.orderList.indexOf(sellOrderByArun)].orderStatus
         )
+        assertEquals(BigInteger("4"),PlatformFee.getPlatformFee())
     }
 
     @Test
@@ -156,6 +161,7 @@ class OrderServiceTest {
             "COMPLETED",
             userList["arun"]!!.orderList[userList["arun"]!!.orderList.indexOf(sellOrderByArun)].orderStatus
         )
+        assertEquals(BigInteger("4"),PlatformFee.getPlatformFee())
     }
 
     @Test
@@ -187,6 +193,7 @@ class OrderServiceTest {
             "PARTIAL",
             userList["kajal"]!!.orderList[userList["kajal"]!!.orderList.indexOf(sellOrderByKajal)].orderStatus
         )
+        assertEquals(BigInteger("1"),PlatformFee.getPlatformFee())
     }
 
     @Test
@@ -218,6 +225,7 @@ class OrderServiceTest {
             "COMPLETED",
             userList["kajal"]!!.orderList[userList["kajal"]!!.orderList.indexOf(sellOrderByKajal)].orderStatus
         )
+        assertEquals(BigInteger("2"),PlatformFee.getPlatformFee())
     }
 
     @Test
@@ -256,6 +264,7 @@ class OrderServiceTest {
             "COMPLETED",
             userList["aditya"]!!.orderList[userList["aditya"]!!.orderList.indexOf(buyOrderByAditya)].orderStatus
         )
+        assertEquals(BigInteger("4"),PlatformFee.getPlatformFee())
     }
 
     @Test
@@ -300,6 +309,7 @@ class OrderServiceTest {
             "COMPLETED",
             userList["arun"]!!.orderList[userList["arun"]!!.orderList.indexOf(buyOrderByArun)].orderStatus
         )
+        assertEquals(BigInteger("4"),PlatformFee.getPlatformFee())
     }
 
 
