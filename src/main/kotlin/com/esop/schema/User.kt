@@ -9,7 +9,7 @@ class User ( var firstName: String,
              var email: String,
              var username: String){
     val userWallet: Wallet = Wallet()
-    val userNonPerfInventory: Inventory = Inventory(type = "NON_PERFORMANCE")
+    val userNonPerfInventory: Inventory = Inventory(type = "PERFORMANCE")
     val userPerformanceInventory: Inventory = Inventory(type = "PERFORMANCE")
     val orderList: ArrayList<Order> = ArrayList<Order>()
 
@@ -20,10 +20,10 @@ class User ( var firstName: String,
     fun addToInventory(inventoryData: AddInventoryDTO): String {
         if(inventoryData.esopType.toString().uppercase() == "NON_PERFORMANCE") {
             userNonPerfInventory.addESOPsToInventory(inventoryData.quantity!!)
-            return "${inventoryData.quantity} Non-Performance ESOPs have been added to the account."
+            return "${inventoryData.quantity} NON_PERFORMANCE ESOPs added to account."
         }else if( inventoryData.esopType.toString().uppercase() == "PERFORMANCE" ){
             userPerformanceInventory.addESOPsToInventory(inventoryData.quantity!!)
-            return "${inventoryData.quantity} Performance ESOPs have been added to the account."
+            return "${inventoryData.quantity} PERFORMANCE ESOPs added to account."
         }
         return "None"
     }

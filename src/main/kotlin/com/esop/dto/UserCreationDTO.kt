@@ -47,6 +47,6 @@ class UserCreationDTO @JsonCreator constructor(
     @field:NotBlank(message = "The username field cannot be blank or missing.")
     @field:Size(max=25, message = "Username should not exceed 25 characters")
     @field:Pattern(regexp = "($USERNAME_REGEX| *)", message =
-    "User Name should only consist english alphabets, numbers or underscore(s) and it must start with an english alphabet.")
+    "Username should only consist english alphabets, numbers or underscore(s) and it must start with an english alphabet.")
     var username: String? = null,
 )
