@@ -9,35 +9,22 @@ import com.esop.dto.UserCreationDTO
 import com.esop.schema.Order
 import com.esop.service.*
 import com.fasterxml.jackson.core.JsonProcessingException
-import io.micronaut.context.annotation.Requires
 import io.micronaut.core.convert.exceptions.ConversionErrorException
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
 import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Error
-import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.*
 import io.micronaut.validation.Validated
 import io.micronaut.web.router.exceptions.UnsatisfiedBodyRouteException
-import io.micronaut.web.router.exceptions.UnsatisfiedRouteException
 import jakarta.inject.Inject
 import javax.validation.ConstraintViolationException
 import javax.validation.Valid
-import javax.validation.Validator
 
 
 @Validated
 @Controller("/user")
 class UserController {
-
-    @Inject
-    lateinit var validator: Validator
-
-    @Inject
-    lateinit var orderService: OrderService
 
     @Inject
     lateinit var userService: UserService
@@ -51,17 +38,17 @@ class UserController {
 
     @Error(exception = JsonProcessingException::class)
     fun onJSONProcessingExceptionError(ex: JsonProcessingException): HttpResponse<Map<String, ArrayList<String>>> {
-        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("Invalid JSON format")))
+        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("JSON format is incorrect.")))
     }
 
     @Error(exception = UnsatisfiedBodyRouteException::class)
     fun onUnsatisfiedBodyRouteException(request: HttpRequest<*>, ex: UnsatisfiedBodyRouteException): HttpResponse<Map<String, List<*>>> {
-        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("request body missing")))
+        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("The request body is missing.")))
     }
 
     @Error(status = HttpStatus.NOT_FOUND, global = true)
     fun onRouteNotFound() : HttpResponse<Map<String, List<*>>> {
-        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("route not found")))
+        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("Route not found.")))
     }
 
     @Error(exception = ConversionErrorException::class)
@@ -100,7 +87,7 @@ class UserController {
         if(orderType == "SELL"){
             esopType = body.esopType.toString().uppercase()
             if(esopType != "PERFORMANCE" && esopType != "NON_PERFORMANCE"){
-                errorList.add("Invalid inventory type")
+                errorList.add("Inventory type is incorrect.")
                 return HttpResponse.ok(mapOf("errors" to errorList))
             }
         }

@@ -15,7 +15,7 @@ class User ( var firstName: String,
 
     fun addToWallet(walletData: AddWalletDTO): String {
         userWallet.addMoneyToWallet(walletData.price!!)
-        return "${walletData.price} amount added to account."
+        return "${walletData.price} amount added to the account."
     }
     fun addToInventory(inventoryData: AddInventoryDTO): String {
         if(inventoryData.esopType.toString().uppercase() == "NON_PERFORMANCE") {
