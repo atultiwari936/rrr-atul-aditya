@@ -1,6 +1,6 @@
 package com.esop.dto
 
-import com.esop.PhoneNumber
+import com.esop.customConstraints.PhoneNumber
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.micronaut.core.annotation.Introspected

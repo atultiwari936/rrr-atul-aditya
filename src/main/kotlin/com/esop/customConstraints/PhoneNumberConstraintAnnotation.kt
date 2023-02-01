@@ -1,4 +1,4 @@
-package com.esop
+package com.esop.customConstraints
 
 import javax.validation.Constraint
 @Retention(AnnotationRetention.RUNTIME)

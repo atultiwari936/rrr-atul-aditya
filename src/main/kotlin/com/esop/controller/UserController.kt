@@ -1,7 +1,6 @@
 package com.esop.controller
 
 
-import com.esop.HttpException
 import com.esop.dto.AddInventoryDTO
 import com.esop.dto.AddWalletDTO
 import com.esop.dto.CreateOrderDTO
@@ -33,11 +32,6 @@ class UserController {
     @Error(exception = Exception::class)
     fun globalExceptionHandler(exception: Exception): HttpResponse<Map<String, ArrayList<String>>>{
         return HttpResponse.badRequest(mapOf("errors" to arrayListOf(exception.toString())))
-    }
-    @Error(exception = HttpException::class)
-    fun onHttpException(exception: HttpException): HttpResponse<*> {
-        return HttpResponse.status<Map<String, ArrayList<String>>>(exception.status)
-            .body(mapOf("errors" to arrayListOf(exception.message)))
     }
 
     @Error(exception = JsonProcessingException::class)

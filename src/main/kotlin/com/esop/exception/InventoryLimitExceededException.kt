@@ -1,4 +1,4 @@
-package com.esop.schema
+package com.esop.exception
 
 class InventoryLimitExceededException : Exception() {
     override fun toString(): String {

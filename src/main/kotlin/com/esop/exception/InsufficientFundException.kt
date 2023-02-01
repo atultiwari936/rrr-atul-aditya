@@ -1,4 +1,4 @@
-package com.esop.schema
+package com.esop.exception
 
 class InsufficientFundException : Exception() {
     override fun toString(): String {

@@ -1,6 +1,9 @@
 package com.esop.schema
 
 import com.esop.constant.MAX_INVENTORY_CAPACITY
+import com.esop.exception.InsufficientNonPerformanceInventoryException
+import com.esop.exception.InsufficientPerformanceInventoryException
+import com.esop.exception.InventoryLimitExceededException
 
 class Inventory(
     private var freeInventory: Long = 0L ,
