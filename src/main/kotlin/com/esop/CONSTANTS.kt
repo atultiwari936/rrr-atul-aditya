@@ -17,6 +17,7 @@ val errors = mapOf(
     "INVALID_USERNAME" to "Invalid User Name: username can consist only of alphabets, numbers or hyphen(s) and should start with an alphabet."
 )
 
+
 const val MAX_WALLET_CAPACITY = 10_000_000L
 
 const val MAX_INVENTORY_CAPACITY = 10_000_000L
