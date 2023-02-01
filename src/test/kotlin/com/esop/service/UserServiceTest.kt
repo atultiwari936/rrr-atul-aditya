@@ -11,14 +11,14 @@ import org.junit.jupiter.api.Test
 class UserServiceTest {
 
     @AfterEach
-    fun `It should clear the in memory data`() {
+    fun `it should clear the in memory data`() {
         userList.clear()
         emailList.clear()
         phoneNumberList.clear()
     }
 
     @Test
-    fun `It should create the user`(){
+    fun `it should create the user, given valid inputs`(){
         val user1 = UserCreationDTO("Kajal", "Pawar", "+919827362534", "kajal@sahaj.ai", "kajal")
 
         UserService().registerUser(user1)
@@ -29,7 +29,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `It should not create the user as phone number is already exist`(){
+    fun `it should not create the user as phone number is already exist`(){
         val user1 = UserCreationDTO("Kajal", "Pawar", "+919876568176", "kajal@sahaj.ai", "kajal")
         UserService().registerUser(user1)
         val user2 = UserCreationDTO("Sankaranarayanan", "M", "+919876568176", "sankaranarayananm@sahaj.ai", "sankar")
@@ -41,7 +41,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `It should not create the user as email is already exist`(){
+    fun `it should not create the user as email is already exist`(){
         val user1 = UserCreationDTO("Kajal", "Pawar", "+919876568176", "kajal@sahaj.ai", "kajal")
         UserService().registerUser(user1)
         val user2 = UserCreationDTO("Sankaranarayanan", "M", "+919887568176", "kajal@sahaj.ai", "sankar")
@@ -53,7 +53,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `It should not create the user as username is already exist`(){
+    fun `it should not create the user as username is already exist`(){
         val user1 = UserCreationDTO("Kajal", "Pawar", "+919876568176", "kajal@sahaj.ai", "kajal")
         UserService().registerUser(user1)
         val user2 = UserCreationDTO("Sankaranarayanan", "M", "+919887568176", "sankar@sahaj.ai", "kajal")

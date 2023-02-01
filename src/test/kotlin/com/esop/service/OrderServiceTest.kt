@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 
 class OrderServiceTest {
     @BeforeEach
-    fun `It should create user`() {
+    fun `it should create user`() {
         val buyer1 = User("Sankaranarayanan", "M", "7550276216", "sankaranarayananm@sahaj.ai", "sankar")
         val buyer2 = User("Aditya", "Tiwari", "", "aditya@sahaj.ai", "aditya")
         val seller1 = User("Kajal", "Pawar", "", "kajal@sahaj.ai", "kajal")
@@ -27,14 +27,14 @@ class OrderServiceTest {
     }
 
     @AfterEach
-    fun `It should clear the in memory data`() {
+    fun `it should clear the in memory data`() {
         buyOrders.clear()
         sellOrders.clear()
         userList.clear()
     }
 
     @Test
-    fun `It should place BUY order`() {
+    fun `it should place BUY order`() {
         //Arrange
         val buyOrder = Order(10, "BUY", 10, "sankar")
 
@@ -46,7 +46,7 @@ class OrderServiceTest {
     }
 
     @Test
-    fun `It should place SELL order`() {
+    fun `it should place SELL order`() {
         //Arrange
         val sellOrder = Order(10, "SELL", 10, "kajal")
 
@@ -58,7 +58,7 @@ class OrderServiceTest {
     }
 
     @Test
-    fun `It should match BUY order for existing SELL order`() {
+    fun `it should match BUY order for existing SELL order`() {
         //Arrange
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
         val sellOrder = Order(10, "SELL", 10, "kajal")
@@ -80,7 +80,7 @@ class OrderServiceTest {
     }
 
     @Test
-    fun `It should place 2 SELL orders followed by a BUY order where the BUY order is partial`() {
+    fun `it should place 2 SELL orders followed by a BUY order where the BUY order is partial`() {
         //Arrange
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
         val sellOrderByKajal = Order(10, "SELL", 10, "kajal")
@@ -118,7 +118,7 @@ class OrderServiceTest {
     }
 
     @Test
-    fun `It should place 2 SELL orders followed by a BUY order where the BUY order is complete`() {
+    fun `it should place 2 SELL orders followed by a BUY order where the BUY order is complete`() {
         //Arrange
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
         val sellOrderByKajal = Order(10, "SELL", 10, "kajal")
@@ -159,7 +159,7 @@ class OrderServiceTest {
     }
 
     @Test
-    fun `It should place 1 SELL orders followed by a BUY order where the BUY order is complete`() {
+    fun `it should place 1 SELL orders followed by a BUY order where the BUY order is complete`() {
         //Arrange
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
         val sellOrderByKajal = Order(10, "SELL", 10, "kajal")
@@ -190,7 +190,7 @@ class OrderServiceTest {
     }
 
     @Test
-    fun `It should place 1 SELL orders followed by a BUY order where the BUY order is partial`() {
+    fun `it should place 1 SELL orders followed by a BUY order where the BUY order is partial`() {
         //Arrange
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
         val sellOrderByKajal = Order(10, "SELL", 10, "kajal")
@@ -221,7 +221,7 @@ class OrderServiceTest {
     }
 
     @Test
-    fun `It should place 2 BUY orders followed by a SELL order where the SELL order is partial`() {
+    fun `it should place 2 BUY orders followed by a SELL order where the SELL order is partial`() {
         //Arrange
         userList["sankar"]!!.userWallet.addMoneyToWallet(100)
         val buyOrderBySankar = Order(10, "BUY", 10, "sankar")
@@ -259,7 +259,7 @@ class OrderServiceTest {
     }
 
     @Test
-    fun `It should place 2 BUY orders followed by a SELL order where the SELL order is complete`() {
+    fun `it should place 2 BUY orders followed by a SELL order where the SELL order is complete`() {
         //Arrange
         userList["kajal"]!!.userWallet.addMoneyToWallet(100)
         val buyOrderByKajal = Order(10, "BUY", 10, "kajal")
