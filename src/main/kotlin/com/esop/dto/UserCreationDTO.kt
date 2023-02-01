@@ -6,12 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.micronaut.core.annotation.Introspected
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
-
-const val PHONE_NUMBER_REGEX = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
 
 const val USERNAME_REGEX = "^[a-zA-Z]+([a-zA-Z]|_|[0-9])*"
 
@@ -35,7 +32,7 @@ class UserCreationDTO @JsonCreator constructor(
 
     @JsonProperty("phoneNumber")
     @field:NotBlank(message = "Phone Number can not be missing or empty.")
-    @field:PhoneNumber()
+    @field:PhoneNumber
     var phoneNumber: String? = null,
 
     @JsonProperty("email")

@@ -6,11 +6,11 @@ class Order(
     var type: String,
     var price: Long,
     var userName: String,
-    var esopType: String = "NON_PERFORMANCE"
+    var esopType: String?
 )
 {
     var timeStamp = System.currentTimeMillis()
-    var remainingQuantity: Long = 0
+    var remainingQuantity: Long = quantity
     var orderStatus: String = "PENDING" // COMPLETED, PARTIAL, PENDING
     var orderFilledLogs: MutableList<OrderFilledLog> = mutableListOf()
     var inventoryPriority: Int = 0
@@ -25,18 +25,30 @@ class Order(
 
     private fun typeIsSellForPerformance() = type == "SELL" && esopType == "PERFORMANCE"
     private fun typeIsSellForNonPerformance() = type == "SELL" && esopType == "NON_PERFORMANCE"
-    fun orderAvailable():Boolean{
-        return orderStatus != "COMPLETED"
+    fun isComplete():Boolean{
+        return orderStatus == "COMPLETED"
     }
 
-    fun addOrderFilledLogs(executedOrder :OrderFilledLog){
+    fun updateOrderStatus(executedOrder: OrderFilledLog){
         if(executedOrder.quantity == remainingQuantity){
             orderStatus = "COMPLETED"
         }else if(executedOrder.quantity < remainingQuantity){
             orderStatus = "PARTIAL"
         }
-        remainingQuantity = remainingQuantity - executedOrder.quantity
+    }
+
+    fun updateRemainingQuantityBySubtractingOrderExecutedQuantity(quantityToBeUpdated: Long){
+        remainingQuantity -= quantityToBeUpdated
+    }
+    fun addOrderFilledLogs(executedOrder :OrderFilledLog){
         orderFilledLogs.add(executedOrder)
     }
 
+    fun isBuyOrder(): Boolean {
+        return this.type == "BUY"
+    }
+
+    fun isSellOrder(): Boolean{
+        return this.type == "SELL"
+    }
 }

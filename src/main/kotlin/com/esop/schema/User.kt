@@ -4,6 +4,7 @@ import com.esop.dto.AddInventoryDTO
 import com.esop.dto.AddWalletDTO
 import com.esop.dto.CreateOrderDTO
 import com.esop.service.OrderService
+import java.util.*
 
 class User(
     var firstName: String,
@@ -41,7 +42,8 @@ class User(
             quantity = orderDetails.quantity!!,
             type = orderDetails.type!!,
             price = orderDetails.price!!,
-            userName = this.username
+            userName = this.username,
+            esopType = null
         )
     }
 
@@ -62,17 +64,18 @@ class User(
         )
     }
 
-    fun createOrder(orderDetails: CreateOrderDTO): Order? {
-        val order: Order
+    fun createOrder(orderDetails: CreateOrderDTO): Optional<Order> {
+        var order = Optional.empty<Order>()
         if (orderDetails.type == "BUY") {
-            order = createBuyOrder(orderDetails)
-            orderList.add(order)
-            return order
+            order = Optional.of(createBuyOrder(orderDetails))
         } else if (orderDetails.type == "SELL") {
-            order = createSellOrder(orderDetails)
-            orderList.add(order)
-            return order
+            order = Optional.of(createSellOrder(orderDetails))
         }
-        return null
+
+        if (order.isPresent) {
+            orderList.add(order.get())
+        }
+
+        return order
     }
 }

@@ -31,11 +31,11 @@ class Wallet{
     }
 
     fun getFreeMoney():Long{
-        return freeMoney;
+        return freeMoney
     }
 
     fun getLockedMoney():Long{
-        return lockedMoney;
+        return lockedMoney
     }
 
     fun removeMoneyFromLockedState( amountToBeRemoved: Long){

@@ -6,7 +6,6 @@ import com.esop.dto.AddInventoryDTO
 import com.esop.dto.AddWalletDTO
 import com.esop.dto.CreateOrderDTO
 import com.esop.dto.UserCreationDTO
-import com.esop.schema.Order
 import com.esop.service.*
 import com.fasterxml.jackson.core.JsonProcessingException
 import io.micronaut.core.convert.exceptions.ConversionErrorException
@@ -20,7 +19,6 @@ import io.micronaut.web.router.exceptions.UnsatisfiedBodyRouteException
 import jakarta.inject.Inject
 import javax.validation.ConstraintViolationException
 import javax.validation.Valid
-import javax.validation.Validator
 
 
 @Validated
@@ -28,15 +26,14 @@ import javax.validation.Validator
 class UserController {
 
     @Inject
-    lateinit var validator: Validator
-
-    @Inject
-    lateinit var orderService: OrderService
-
-    @Inject
     lateinit var userService: UserService
 
+    lateinit var orderService: OrderService
 
+    @Error(exception = Exception::class)
+    fun globalExceptionHandler(exception: Exception): HttpResponse<Map<String, ArrayList<String>>>{
+        return HttpResponse.badRequest(mapOf("errors" to arrayListOf(exception.toString())))
+    }
     @Error(exception = HttpException::class)
     fun onHttpException(exception: HttpException): HttpResponse<*> {
         return HttpResponse.status<Map<String, ArrayList<String>>>(exception.status)
@@ -73,8 +70,6 @@ class UserController {
         return HttpResponse.serverError(mapOf("errors" to arrayListOf(ex.message)))
     }
 
-
-
     @Post(uri="/register", consumes = [MediaType.APPLICATION_JSON],produces=[MediaType.APPLICATION_JSON])
      fun register(@Body @Valid userData: UserCreationDTO): HttpResponse<*> {
         val newUser = this.userService.registerUser(userData)
@@ -86,22 +81,9 @@ class UserController {
 
     @Post(uri="/{userName}/order", consumes = [MediaType.APPLICATION_JSON],produces=[MediaType.APPLICATION_JSON])
     fun order(userName: String, @Body @Valid body: CreateOrderDTO): Any? {
-        var errorList = mutableListOf<String>()
+        val response = orderService.createOrder(userName,body)
 
-        OrderService.createOrder(userName,body)
-
-        val userOrderOrErrors = OrderService.placeOrder(order)
-
-        if (userOrderOrErrors["orderId"] != null) {
-            return HttpResponse.ok(mapOf(
-                "orderId" to userOrderOrErrors["orderId"],
-                "quantity" to body.quantity,
-                "type" to body.type,
-                "price" to body.price
-            ))
-        }else{
-            return HttpResponse.badRequest(userOrderOrErrors)
-        }
+        return HttpResponse.ok(response)
     }
 
     @Get(uri = "/{userName}/accountInformation", produces = [MediaType.APPLICATION_JSON])

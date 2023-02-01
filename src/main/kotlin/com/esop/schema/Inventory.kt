@@ -12,7 +12,7 @@ class Inventory(
         return freeInventory + lockedInventory
     }
 
-    fun willInventoryOverflowOnAdding(quantity: Long): Boolean {
+    private fun willInventoryOverflowOnAdding(quantity: Long): Boolean {
         return quantity + totalESOPQuantity() > MAX_INVENTORY_CAPACITY
     }
 
@@ -27,17 +27,20 @@ class Inventory(
     }
 
     fun moveESOPsFromFreeToLockedState(esopsToBeLocked: Long) {
-        if (this.freeInventory < esopsToBeLocked) throw InsufficientInventoryTypeException(type)
+        if (this.freeInventory < esopsToBeLocked){
+            if (type == "PERFORMANCE") throw InsufficientPerformanceInventoryException()
+            else if(type == "NON_PERFORMANCE") throw InsufficientNonPerformanceInventoryException()
+        }
         this.freeInventory = this.freeInventory - esopsToBeLocked
         this.lockedInventory = this.lockedInventory + esopsToBeLocked
     }
 
     fun getFreeInventory():Long{
-        return freeInventory;
+        return freeInventory
     }
 
     fun getLockedInventory():Long{
-        return lockedInventory;
+        return lockedInventory
     }
 
     fun removeESOPsFromLockedState( esopsToBeRemoved: Long){
