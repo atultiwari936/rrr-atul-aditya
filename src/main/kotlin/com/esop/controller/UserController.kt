@@ -11,6 +11,10 @@ import com.esop.service.*
 import com.fasterxml.jackson.core.JsonProcessingException
 import io.micronaut.core.convert.exceptions.ConversionErrorException
 import io.micronaut.http.*
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.*
 import io.micronaut.validation.Validated
 import io.micronaut.web.router.exceptions.UnsatisfiedBodyRouteException
@@ -25,7 +29,6 @@ class UserController {
 
     @Inject
     lateinit var userService: UserService
-
 
     @Error(exception = HttpException::class)
     fun onHttpException(exception: HttpException): HttpResponse<Map<String, ArrayList<String?>>> {
@@ -62,10 +65,9 @@ class UserController {
     }
 
     @Error(exception = RuntimeException::class)
-    fun onRuntimeError(exception: RuntimeException): HttpResponse<Map<String, List<String?>>> {
+    fun onRuntimeException(exception: RuntimeException): HttpResponse<Map<String, List<String?>>> {
         return HttpResponse.serverError(mapOf("errors" to arrayListOf(exception.message)))
     }
-
 
     @Post(uri = "/register", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
     fun createUser(@Body @Valid userData: UserCreationDTO): HttpResponse<*> {
@@ -77,7 +79,7 @@ class UserController {
     }
 
     @Post(uri = "/{userName}/order", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
-    fun placeOrder(userName: String, @Body @Valid body: CreateOrderDTO): Any? {
+    fun createOrder(userName: String, @Body @Valid body: CreateOrderDTO): Any? {
         var errorList = mutableListOf<String>()
 
         val orderType: String = body.type.toString().uppercase()
@@ -133,7 +135,7 @@ class UserController {
         consumes = [MediaType.APPLICATION_JSON],
         produces = [MediaType.APPLICATION_JSON]
     )
-    fun addInventory(userName: String, @Body @Valid body: AddInventoryDTO): HttpResponse<*> {
+    fun addEsopsToInventory(userName: String, @Body @Valid body: AddInventoryDTO): HttpResponse<*> {
         val newInventory = this.userService.addingInventory(body, userName)
 
         if (newInventory["error"] != null) {
@@ -144,7 +146,7 @@ class UserController {
 
 
     @Post(uri = "{userName}/wallet", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
-    fun addWallet(userName: String, @Body @Valid body: AddWalletDTO): HttpResponse<*> {
+    fun addAmountToWallet(userName: String, @Body @Valid body: AddWalletDTO): HttpResponse<*> {
         val addedMoney = this.userService.addingMoney(body, userName)
 
         if (addedMoney["error"] != null) {
