@@ -27,6 +27,7 @@ class UserController {
     @Inject
     lateinit var userService: UserService
 
+    @Inject
     lateinit var orderService: OrderService
 
     @Error(exception = Exception::class)
@@ -75,7 +76,7 @@ class UserController {
 
     @Post(uri="/{userName}/order", consumes = [MediaType.APPLICATION_JSON],produces=[MediaType.APPLICATION_JSON])
     fun order(userName: String, @Body @Valid body: CreateOrderDTO): Any? {
-        val response = orderService.createOrder(userName,body)
+        val response = this.orderService.createOrder(userName,body)
 
         return HttpResponse.ok(response)
     }
