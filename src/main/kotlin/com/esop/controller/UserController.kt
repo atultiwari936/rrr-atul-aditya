@@ -9,20 +9,14 @@ import com.esop.dto.UserCreationDTO
 import com.esop.schema.Order
 import com.esop.service.*
 import com.fasterxml.jackson.core.JsonProcessingException
-import io.micronaut.context.annotation.Requires
 import io.micronaut.core.convert.exceptions.ConversionErrorException
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
 import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Error
-import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.*
 import io.micronaut.validation.Validated
 import io.micronaut.web.router.exceptions.UnsatisfiedBodyRouteException
-import io.micronaut.web.router.exceptions.UnsatisfiedRouteException
 import jakarta.inject.Inject
 import javax.validation.ConstraintViolationException
 import javax.validation.Valid
@@ -94,27 +88,8 @@ class UserController {
     fun order(userName: String, @Body @Valid body: CreateOrderDTO): Any? {
         var errorList = mutableListOf<String>()
 
-        val orderType: String = body.type.toString().uppercase()
-        var esopType = "NON_PERFORMANCE"
+        OrderService.createOrder(userName,body)
 
-        if(orderType == "SELL"){
-            esopType = body.esopType.toString().uppercase()
-            if(esopType != "PERFORMANCE" && esopType != "NON_PERFORMANCE"){
-                errorList.add("Invalid inventory type")
-                return HttpResponse.ok(mapOf("errors" to errorList))
-            }
-        }
-
-        val order = Order(body.quantity!!.toLong(),body.type.toString().uppercase(),body.price!!.toLong(),userName)
-        if(orderType == "SELL"){
-            order.esopType = esopType
-            if(esopType == "PERFORMANCE")
-                order.inventoryPriority = 1
-        }
-        errorList = UserService.orderCheckBeforePlace(order)
-        if(errorList.size > 0){
-            return HttpResponse.badRequest(mapOf("errors" to errorList))
-        }
         val userOrderOrErrors = OrderService.placeOrder(order)
 
         if (userOrderOrErrors["orderId"] != null) {

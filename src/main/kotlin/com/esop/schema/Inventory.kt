@@ -1,6 +1,5 @@
 package com.esop.schema
 
-import com.esop.InventoryLimitExceededException
 import com.esop.constant.MAX_INVENTORY_CAPACITY
 
 class Inventory(
@@ -17,23 +16,20 @@ class Inventory(
         return quantity + totalESOPQuantity() > MAX_INVENTORY_CAPACITY
     }
 
-    fun assertInventoryWillNotOverflowOnAdding(quantity: Long) {
+    fun checkInventoryWillNotOverflowOnAdding(quantity: Long) {
         if (willInventoryOverflowOnAdding(quantity)) throw InventoryLimitExceededException()
     }
 
     fun addESOPsToInventory(esopsToBeAdded: Long) {
-        assertInventoryWillNotOverflowOnAdding(esopsToBeAdded)
+        checkInventoryWillNotOverflowOnAdding(esopsToBeAdded)
 
         this.freeInventory = this.freeInventory + esopsToBeAdded
     }
 
-    fun moveESOPsFromFreeToLockedState(esopsToBeLocked: Long): String {
-        if (this.freeInventory < esopsToBeLocked) {
-            return "Insufficient ${type.toLowerCase()} inventory.";
-        }
+    fun moveESOPsFromFreeToLockedState(esopsToBeLocked: Long) {
+        if (this.freeInventory < esopsToBeLocked) throw InsufficientInventoryTypeException(type)
         this.freeInventory = this.freeInventory - esopsToBeLocked
         this.lockedInventory = this.lockedInventory + esopsToBeLocked
-        return "SUCCESS"
     }
 
     fun getFreeInventory():Long{

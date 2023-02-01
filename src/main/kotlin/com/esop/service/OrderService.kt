@@ -2,10 +2,12 @@ package com.esop.service
 
 
 import com.esop.constant.errors
+import com.esop.dto.CreateOrderDTO
 import com.esop.schema.History
 import com.esop.schema.Order
 import com.esop.schema.OrderFilledLog
 import com.esop.schema.PlatformFee.Companion.addPlatformFee
+import com.esop.schema.User
 import jakarta.inject.Singleton
 import kotlin.math.round
 
@@ -245,12 +247,6 @@ class OrderService{
         }
 
         fun placeOrder(order: Order): Map<String, Any> {
-            var inventoryPriority = 2
-            if (order.esopType == "PERFORMANCE") {
-                inventoryPriority -= 1
-            }
-            order.orderID = generateOrderId()
-            order.inventoryPriority = inventoryPriority
             order.remainingQuantity = order.quantity
 
             if (order.type == "BUY") {
@@ -284,6 +280,26 @@ class OrderService{
 
             errors["NO_ORDERS"]?.let { userErrors.add(it) }
             return mapOf("error" to userErrors)
+        }
+
+        fun createOrder(userName: String,orderDetails: CreateOrderDTO){
+            try{
+                UserService.validateUser(userName)
+
+                val user: User = UserService.getUser(userName)
+                val order: Order? = user.createOrder(orderDetails)
+
+                if(order!!.type == "BUY"){
+                    buyOrders.add(order!!)
+                }else if(order!!.type == "SELL"){
+                    sellOrders.add(order!!)
+                }
+
+
+                placeOrder(order!!)
+            }catch(exceptionObject: Exception){
+
+            }
         }
     }
 }
