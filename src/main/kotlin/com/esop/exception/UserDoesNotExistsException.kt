@@ -1,4 +1,4 @@
-package com.esop.service
+package com.esop.exception
 
 class UserDoesNotExistsException : Exception() {
     override fun toString(): String {

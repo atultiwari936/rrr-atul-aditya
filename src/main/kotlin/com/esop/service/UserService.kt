@@ -4,6 +4,7 @@ import com.esop.constant.errors
 import com.esop.dto.AddInventoryDTO
 import com.esop.dto.AddWalletDTO
 import com.esop.dto.UserCreationDTO
+import com.esop.exception.UserDoesNotExistsException
 import com.esop.schema.User
 import jakarta.inject.Singleton
 

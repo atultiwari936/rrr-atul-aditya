@@ -1,6 +1,7 @@
 package com.esop
 
 import com.esop.constant.MAX_INVENTORY_CAPACITY
+import com.esop.exception.InventoryLimitExceededException
 import com.esop.schema.Inventory
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions
@@ -57,11 +58,10 @@ class InventoryTest {
         val esopsToBeMoved = 10L
         val inventory = Inventory(freeInventory = initialFreeInventory, lockedInventory = initialLockedInventory, type = "PERFORMANCE")
 
-        val message = inventory.moveESOPsFromFreeToLockedState(esopsToBeMoved)
+        inventory.moveESOPsFromFreeToLockedState(esopsToBeMoved)
         val actualFreeInventory = inventory.getFreeInventory()
         val actualLockedInventory = inventory.getLockedInventory()
 
-        Assertions.assertEquals("SUCCESS", message)
         Assertions.assertEquals(initialFreeInventory - esopsToBeMoved, actualFreeInventory)
         Assertions.assertEquals(initialLockedInventory + esopsToBeMoved, actualLockedInventory)
     }
