@@ -261,16 +261,16 @@ class OrderService{
             }
 
             UserService.userList[order.userName]?.orderList?.add(order)
-
             return mapOf("orderId" to order.orderID)
         }
 
         fun orderHistory(userName: String): Any {
-            val userErrors = ArrayList<String>()
+            val errorList = ArrayList<String>()
             if (!UserService.userList.contains(userName)) {
-                errors["USER_DOES_NOT_EXISTS"]?.let { userErrors.add(it) }
-                return mapOf("error" to userErrors)
+                errors["USER_DOES_NOT_EXISTS"]?.let { errorList.add(it) }
+                return mapOf("error" to errorList)
             }
+
             val orderDetails = UserService.userList[userName]!!.orderList
             val orderHistory = ArrayList<History>()
 
