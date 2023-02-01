@@ -112,6 +112,7 @@ class OrderService{
                 }
                 if ((order.price >= bestSellOrder.price) && (bestSellOrder.remainingQuantity > 0)) {
                     val prevQuantity = order.remainingQuantity
+                    val orderExecutionPrice =
                     if(order.remainingQuantity < bestSellOrder.remainingQuantity){
 
                         val buyOrderLog = OrderFilledLog(order.remainingQuantity,bestSellOrder.price,null, bestSellOrder.userName,null)

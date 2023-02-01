@@ -10,7 +10,6 @@ class Order(
 )
 {
     var timeStamp = System.currentTimeMillis()
-    var currentQuantity: Long = 0
     var remainingQuantity: Long = 0
     var orderStatus: String = "PENDING" // COMPLETED, PARTIAL, PENDING
     var orderFilledLogs: MutableList<OrderFilledLog> = mutableListOf()
@@ -28,6 +27,16 @@ class Order(
     private fun typeIsSellForNonPerformance() = type == "SELL" && esopType == "NON_PERFORMANCE"
     fun orderAvailable():Boolean{
         return orderStatus != "COMPLETED"
+    }
+
+    fun addOrderFilledLogs(executedOrder :OrderFilledLog){
+        if(executedOrder.quantity == remainingQuantity){
+            orderStatus = "COMPLETED"
+        }else if(executedOrder.quantity < remainingQuantity){
+            orderStatus = "PARTIAL"
+        }
+        remainingQuantity = remainingQuantity - executedOrder.quantity
+        orderFilledLogs.add(executedOrder)
     }
 
 }
