@@ -12,7 +12,7 @@ class PlatformController {
     fun getPlatformFee(): HttpResponse<*>{
         return HttpResponse.ok(
             mapOf(
-                "Platform Fee" to PlatformFee.platFee
+                "Platform Fee" to PlatformFee.platformFees
             ))
     }
 

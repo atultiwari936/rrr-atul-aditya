@@ -6,7 +6,6 @@ import io.micronaut.context.annotation.Factory
 import io.micronaut.validation.validator.constraints.ConstraintValidator
 import jakarta.inject.Singleton
 
-
 @Factory
 class CustomConstraintFactory {
     @Singleton

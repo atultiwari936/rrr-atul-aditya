@@ -3,25 +3,25 @@ package com.esop.schema
 class PlatformFee{
 
     companion object {
-        var platFee:String = "0"
+        var platformFees:String = "0"
 
         fun addPlatformFee(fee: Long){
 
             val feeToBeAdd: String = fee.toString()
 
             var result = ""
-            platFee.reversed()
+            platformFees.reversed()
             feeToBeAdd.reversed()
 
-            val len:Int = maxOf(platFee.length,feeToBeAdd.length)
+            val len:Int = maxOf(platformFees.length,feeToBeAdd.length)
             var carry = 0
 
             for (i in (0 until len)){
                 var sum: Int = carry
-                sum += if(i< platFee.length && i<feeToBeAdd.length)
-                    (platFee[i]-48).code + (feeToBeAdd[i]-48).code
-                else if(i< platFee.length)
-                    (platFee[i]-48).code
+                sum += if(i< platformFees.length && i<feeToBeAdd.length)
+                    (platformFees[i]-48).code + (feeToBeAdd[i]-48).code
+                else if(i< platformFees.length)
+                    (platformFees[i]-48).code
                 else
                     (feeToBeAdd[i]-48).code
                 carry = sum/10
@@ -30,7 +30,7 @@ class PlatformFee{
             if(carry>0)
                 result += carry.toString()
             result.reversed()
-            platFee = result
+            platformFees = result
         }
 
     }
