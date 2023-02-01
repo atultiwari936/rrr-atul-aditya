@@ -13,7 +13,7 @@ class CustomConstraintFactory {
     fun phoneNumberValidator() : ConstraintValidator<PhoneNumber, String> {
         val phoneUtil = PhoneNumberUtil.getInstance()
 
-        return ConstraintValidator { value, annotation, context ->
+        return ConstraintValidator { value, _, context ->
             value == null || try {
                  phoneUtil.isValidNumber(phoneUtil.parse(value, null))
             } catch (e: NumberParseException) {
