@@ -17,7 +17,7 @@ class UserService {
 
         fun orderCheckBeforePlace(order: Order): MutableList<String> {
             val errorList = mutableListOf<String>()
-            val user = userList.get(order.userName)!!
+            val user = userList[order.userName]!!
             val wallet = user.userWallet
             val nonPerformanceInventory = user.userNonPerfInventory
 
@@ -29,7 +29,7 @@ class UserService {
             if(order.type == "BUY"){
                 nonPerformanceInventory.assertInventoryWillNotOverflowOnAdding(order.quantity)
 
-                val response = user!!.userWallet.moveMoneyFromFreeToLockedState(order.price*order.quantity)
+                val response = user.userWallet.moveMoneyFromFreeToLockedState(order.price*order.quantity)
                 if (response != "SUCCESS"){
                     errorList.add(response)
                 }
@@ -38,12 +38,12 @@ class UserService {
                 wallet.assertWalletWillNotOverflowOnAdding(order.price * order.quantity)
 
                 if(order.esopType == "PERFORMANCE"){
-                    val response = user!!.userPerformanceInventory.moveESOPsFromFreeToLockedState(order.quantity)
+                    val response = user.userPerformanceInventory.moveESOPsFromFreeToLockedState(order.quantity)
                     if ( response != "SUCCESS" ){
                         errorList.add(response)
                     }
                 }else if(order.esopType == "NON_PERFORMANCE"){
-                    val response = user!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(order.quantity)
+                    val response = user.userNonPerfInventory.moveESOPsFromFreeToLockedState(order.quantity)
                     if ( response != "SUCCESS" ){
                         errorList.add(response)
                     }
@@ -53,33 +53,33 @@ class UserService {
         }
     }
 
-    fun check_username( search_value: String): Boolean
+    private fun checkUsername(searchValue: String): Boolean
     {
-        return userList.contains(search_value)
+        return userList.contains(searchValue)
     }
 
-    fun check_phonenumber(usernumber_set: MutableSet<String>, search_value: String): Boolean
+    private fun checkPhoneNumber(userNumber: MutableSet<String>, searchValue: String): Boolean
     {
-        return usernumber_set.contains(search_value)
+        return userNumber.contains(searchValue)
     }
 
-    fun check_email(useremail_set: MutableSet<String>, search_value: String): Boolean
+    private fun checkEmail(userEmail: MutableSet<String>, searchValue: String): Boolean
     {
-        return useremail_set.contains(search_value)
+        return userEmail.contains(searchValue)
     }
 
 
-    fun validateUserDetails(userData: UserCreationDTO): List<String>
+    private fun validateUserDetails(userData: UserCreationDTO): List<String>
     {
         val errorList = mutableListOf<String>()
 
-        if(check_username(userData.username!!)){
+        if(checkUsername(userData.username!!)){
             errorList.add(errors["USERNAME_EXISTS"].toString())
         }
-        if(check_email(emailList, userData.email!!)){
+        if(checkEmail(emailList, userData.email!!)){
             errorList.add(errors["EMAIL_EXISTS"].toString())
         }
-        if(check_phonenumber(phoneNumberList, userData.phoneNumber!!)){
+        if(checkPhoneNumber(phoneNumberList, userData.phoneNumber!!)){
             errorList.add(errors["PHONENUMBER_EXISTS"].toString())
         }
 
@@ -89,7 +89,7 @@ class UserService {
     fun registerUser(userData: UserCreationDTO): Map<String,Any>
     {
         val errors = validateUserDetails(userData)
-        if(errors.size > 0) {
+        if(errors.isNotEmpty()) {
             return mapOf("error" to errors)
         }
         val user = User(
@@ -98,31 +98,31 @@ class UserService {
             userData.phoneNumber!!,
             userData.email!!,
             userData.username!!
-        );
-        userList.put(userData.username!!,user)
+        )
+        userList[userData.username!!] = user
         emailList.add(userData.email!!)
         phoneNumberList.add(userData.phoneNumber!!)
         return mapOf(
-            "firstName" to user.firstName.toString(),
-            "lastName" to user.lastName.toString(),
-            "phoneNumber" to user.phoneNumber.toString(),
-            "email" to user.email.toString(),
-            "username" to user.username.toString()
+            "firstName" to user.firstName,
+            "lastName" to user.lastName,
+            "phoneNumber" to user.phoneNumber,
+            "email" to user.email,
+            "username" to user.username
         )
     }
 
     fun accountInformation(userName: String): Map<String, Any?>
     {
-        var errorList = mutableListOf<String>()
+        val errorList = mutableListOf<String>()
 
-        if ( !check_username(userName) ){
+        if ( !checkUsername(userName) ){
             errorList.add(errors["USER_DOES_NOT_EXISTS"].toString())
         }
 
         if( errorList.size > 0 ){
             return mapOf("error" to errorList)
         }
-        val user = userList.get(userName)!!
+        val user = userList[userName]!!
 
         return mapOf(
             "firstName" to user.firstName,
@@ -151,26 +151,26 @@ class UserService {
 
         fun addingInventory(inventoryData: AddInventoryDTO, userName: String): Map<String, Any>
         {
-            var errorList = mutableListOf<String>()
+            val errorList = mutableListOf<String>()
 
             if ( inventoryData.esopType.toString().uppercase() != "NON_PERFORMANCE" && inventoryData.esopType.toString().uppercase() != "PERFORMANCE" ){
                 errorList.add(errors["INVALID_TYPE"].toString())
             }
-            else if ( !check_username(userName) ){
+            else if ( !checkUsername(userName) ){
                 errorList.add(errors["USER_DOES_NOT_EXISTS"].toString())
             }
 
             if( errorList.size > 0 ) {
                 return mapOf("error" to errorList)
             }
-            return mapOf("message" to userList.get(userName)!!.addToInventory(inventoryData))
+            return mapOf("message" to userList[userName]!!.addToInventory(inventoryData))
         }
 
     fun addingMoney(walletData: AddWalletDTO, userName: String): Map<String, Any>
     {
-        var errorList = mutableListOf<String>()
+        val errorList = mutableListOf<String>()
 
-        if ( !check_username(userName) ){
+        if ( !checkUsername(userName) ){
             errorList.add(errors["USER_DOES_NOT_EXISTS"].toString())
         }
 
@@ -178,6 +178,6 @@ class UserService {
             return mapOf("error" to errorList)
         }
 
-        return mapOf("message" to userList.get(userName)!!.addToWallet(walletData))
+        return mapOf("message" to userList[userName]!!.addToWallet(walletData))
     }
 }

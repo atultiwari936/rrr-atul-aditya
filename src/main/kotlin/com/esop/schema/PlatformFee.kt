@@ -7,23 +7,23 @@ class PlatformFee{
 
         fun addPlatformFee(fee: Long){
 
-            var feeToBeAdd: String = fee.toString()
+            val feeToBeAdd: String = fee.toString()
 
-            var result:String = ""
+            var result = ""
             platFee.reversed()
             feeToBeAdd.reversed()
 
-            var len:Int = maxOf(platFee.length,feeToBeAdd.length)
-            var carry:Int = 0
+            val len:Int = maxOf(platFee.length,feeToBeAdd.length)
+            var carry = 0
 
-            for (i in (0..len-1)){
+            for (i in (0 until len)){
                 var sum: Int = carry
-                if(i< platFee.length && i<feeToBeAdd.length)
-                    sum += (platFee[i]-48).toInt()+(feeToBeAdd[i]-48).toInt()
+                sum += if(i< platFee.length && i<feeToBeAdd.length)
+                    (platFee[i]-48).code + (feeToBeAdd[i]-48).code
                 else if(i< platFee.length)
-                    sum += (platFee[i]-48).toInt()
+                    (platFee[i]-48).code
                 else
-                    sum += (feeToBeAdd[i]-48).toInt()
+                    (feeToBeAdd[i]-48).code
                 carry = sum/10
                 result += (sum%10).toString()
             }
