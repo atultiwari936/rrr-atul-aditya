@@ -136,7 +136,7 @@ class UserController {
         produces = [MediaType.APPLICATION_JSON]
     )
     fun addEsopsToInventory(userName: String, @Body @Valid body: AddInventoryDTO): HttpResponse<*> {
-        val newInventory = this.userService.addingInventory(body, userName)
+        val newInventory = this.userService.addEsopsToInventory(body, userName)
 
         if (newInventory["error"] != null) {
             return HttpResponse.badRequest(newInventory)
@@ -147,7 +147,7 @@ class UserController {
 
     @Post(uri = "{userName}/wallet", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
     fun addAmountToWallet(userName: String, @Body @Valid body: AddWalletDTO): HttpResponse<*> {
-        val addedMoney = this.userService.addingMoney(body, userName)
+        val addedMoney = this.userService.addMoneyToWallet(body, userName)
 
         if (addedMoney["error"] != null) {
             return HttpResponse.badRequest(addedMoney)
