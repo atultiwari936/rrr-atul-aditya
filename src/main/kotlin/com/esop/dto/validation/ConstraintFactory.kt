@@ -1,4 +1,4 @@
-package com.esop
+package com.esop.dto.validation
 
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
