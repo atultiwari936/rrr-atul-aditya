@@ -9,20 +9,11 @@ import com.esop.dto.UserCreationDTO
 import com.esop.schema.Order
 import com.esop.service.*
 import com.fasterxml.jackson.core.JsonProcessingException
-import io.micronaut.context.annotation.Requires
 import io.micronaut.core.convert.exceptions.ConversionErrorException
-import io.micronaut.http.HttpRequest
-import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpStatus
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Error
-import io.micronaut.http.annotation.Post
+import io.micronaut.http.*
+import io.micronaut.http.annotation.*
 import io.micronaut.validation.Validated
 import io.micronaut.web.router.exceptions.UnsatisfiedBodyRouteException
-import io.micronaut.web.router.exceptions.UnsatisfiedRouteException
 import jakarta.inject.Inject
 import javax.validation.ConstraintViolationException
 import javax.validation.Valid
@@ -44,39 +35,39 @@ class UserController {
 
 
     @Error(exception = HttpException::class)
-    fun onHttpException(exception: HttpException): HttpResponse<*> {
+    fun onHttpException(exception: HttpException): HttpResponse<Map<String, ArrayList<String?>>> {
         return HttpResponse.status<Map<String, ArrayList<String>>>(exception.status)
             .body(mapOf("errors" to arrayListOf(exception.message)))
     }
 
     @Error(exception = JsonProcessingException::class)
-    fun onJSONProcessingExceptionError(ex: JsonProcessingException): HttpResponse<Map<String, ArrayList<String>>> {
+    fun onJSONProcessingExceptionError(exception: JsonProcessingException): HttpResponse<Map<String, ArrayList<String>>> {
         return HttpResponse.badRequest(mapOf("errors" to arrayListOf("Invalid JSON format")))
     }
 
     @Error(exception = UnsatisfiedBodyRouteException::class)
-    fun onUnsatisfiedBodyRouteException(request: HttpRequest<*>, ex: UnsatisfiedBodyRouteException): HttpResponse<Map<String, List<*>>> {
-        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("request body missing")))
+    fun onUnsatisfiedBodyRouteException(request: HttpRequest<*>, exception: UnsatisfiedBodyRouteException): HttpResponse<Map<String, List<String>>> {
+        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("Request body is missing")))
     }
 
     @Error(status = HttpStatus.NOT_FOUND, global = true)
-    fun onRouteNotFound() : HttpResponse<Map<String, List<*>>> {
-        return HttpResponse.badRequest(mapOf("errors" to arrayListOf("route not found")))
+    fun onRouteNotFound() : HttpResponse<Map<String, List<String>>> {
+        return HttpResponse.notFound(mapOf("errors" to arrayListOf("Route not found")))
     }
 
     @Error(exception = ConversionErrorException::class)
-    fun onConversionErrorException(ex: ConversionErrorException): HttpResponse<Map<String, List<*>>> {
-        return HttpResponse.badRequest(mapOf("errors" to arrayListOf(ex.message)))
+    fun onConversionErrorException(exception: ConversionErrorException): HttpResponse<Map<String, ArrayList<String?>>> {
+        return HttpResponse.badRequest(mapOf("errors" to arrayListOf(exception.message)))
     }
 
     @Error(exception = ConstraintViolationException::class)
-    fun onConstraintViolationException(ex: ConstraintViolationException): HttpResponse<Map<String, List<*>>> {
-        return HttpResponse.badRequest(mapOf("errors" to ex.constraintViolations.map { it.message }))
+    fun onConstraintViolationException(exception: ConstraintViolationException): HttpResponse<Map<String, List<String>>> {
+        return HttpResponse.badRequest(mapOf("errors" to exception.constraintViolations.map { it.message }))
     }
 
     @Error(exception = RuntimeException::class)
-    fun onRuntimeError(ex: RuntimeException): HttpResponse<Map<String, List<*>>> {
-        return HttpResponse.serverError(mapOf("errors" to arrayListOf(ex.message)))
+    fun onRuntimeError(exception: RuntimeException): HttpResponse<Map<String, ArrayList<String?>>>? {
+        return HttpResponse.serverError(mapOf("errors" to arrayListOf(exception.message)))
     }
 
 
