@@ -1,14 +1,14 @@
 package com.esop.service
 
-import com.esop.schema.Order
+import com.esop.dto.AddInventoryDTO
+import com.esop.dto.AddWalletDTO
+import com.esop.dto.CreateOrderDTO
 import com.esop.schema.User
 import com.esop.service.OrderService.Companion.buyOrders
-import com.esop.service.OrderService.Companion.executeOrderMatching
 import com.esop.service.OrderService.Companion.sellOrders
 import com.esop.service.UserService.Companion.userList
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -36,41 +36,48 @@ class OrderServiceTest {
     @Test
     fun `It should place BUY order`() {
         //Arrange
-        val buyOrder = Order(1,10, "BUY", 10, "sankar", null)
+        val walletData = AddWalletDTO(100)
+        val buyOrder = CreateOrderDTO("BUY", 10, 10, null)
+        val orderService = OrderService()
+        val userService = UserService()
+        userService.addingMoney(walletData, "sankar")
 
         //Act
-        executeOrderMatching(buyOrder)
+        orderService.createOrder("sankar", buyOrder)
 
         //Assert
-        assertTrue(buyOrders.contains(buyOrder))
+        assertEquals(1, buyOrders.size)
     }
 
     @Test
     fun `It should place SELL order`() {
         //Arrange
-        val sellOrder = Order(1,10, "SELL", 10, "kajal", null)
+        val inventoryData = AddInventoryDTO(10, "NON_PERFORMANCE")
+        val sellOrder = CreateOrderDTO("SELL", 10, 10, "NON_PERFORMANCE")
+        val orderService = OrderService()
+        val userService = UserService()
+        userService.addingInventory(inventoryData, "kajal")
 
         //Act
-        executeOrderMatching(sellOrder)
+        orderService.createOrder("kajal", sellOrder)
 
         //Assert
-        assertTrue(sellOrders.contains(sellOrder))
+        assertEquals(1, sellOrders.size)
     }
 
     @Test
     fun `It should match BUY order for existing SELL order`() {
         //Arrange
+        val orderService = OrderService()
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
-        val sellOrder = Order(1,10, "SELL", 10, "kajal", null)
-        userList["kajal"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(10)
-        executeOrderMatching(sellOrder)
+        val sellOrder = CreateOrderDTO("SELL", 10, 10, "NON_PERFORMANCE")
+        orderService.createOrder("kajal", sellOrder)
 
         userList["sankar"]!!.userWallet.addMoneyToWallet(100)
-        val buyOrder = Order(2,10, "BUY", 10, "sankar", null)
-        userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(100)
+        val buyOrder = CreateOrderDTO("BUY", 10, 10, null)
 
         //Act
-        executeOrderMatching(buyOrder)
+        orderService.createOrder("sankar", buyOrder)
 
         //Assert
         assertEquals(40, userList["kajal"]!!.userNonPerfInventory.getFreeInventory())
@@ -82,22 +89,20 @@ class OrderServiceTest {
     @Test
     fun `It should place 2 SELL orders followed by a BUY order where the BUY order is partial`() {
         //Arrange
+        val orderService = OrderService()
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
-        val sellOrderByKajal = Order(1,10, "SELL", 10, "kajal", null)
-        userList["kajal"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(10)
-        executeOrderMatching(sellOrderByKajal)
+        val sellOrderByKajal = CreateOrderDTO("SELL", 10, 10, "NON_PERFORMANCE")
+        orderService.createOrder("kajal", sellOrderByKajal)
 
         userList["arun"]!!.userNonPerfInventory.addESOPsToInventory(50)
-        val sellOrderByArun = Order(2,10, "SELL", 10, "arun", null)
-        userList["arun"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(10)
-        executeOrderMatching(sellOrderByArun)
+        val sellOrderByArun = CreateOrderDTO("SELL", 10, 10, "NON_PERFORMANCE")
+        orderService.createOrder("arun", sellOrderByArun)
 
         userList["sankar"]!!.userWallet.addMoneyToWallet(250)
-        val buyOrderBySankar = Order(3,25, "BUY", 10, "sankar", null)
-        userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(250)
+        val buyOrderBySankar = CreateOrderDTO("BUY", 25, 10, null)
 
         //Act
-        executeOrderMatching(buyOrderBySankar)
+        orderService.createOrder("sankar", buyOrderBySankar)
 
         //Assert
         assertEquals(40, userList["kajal"]!!.userNonPerfInventory.getFreeInventory())
@@ -106,36 +111,28 @@ class OrderServiceTest {
         assertEquals(98, userList["kajal"]!!.userWallet.getFreeMoney())
         assertEquals(98, userList["arun"]!!.userWallet.getFreeMoney())
         assertEquals(50, userList["sankar"]!!.userWallet.getLockedMoney())
-        assertEquals("PARTIAL", buyOrders[buyOrders.indexOf(buyOrderBySankar)].orderStatus)
-        assertEquals(
-            "COMPLETED",
-            userList["kajal"]!!.orderList[userList["kajal"]!!.orderList.indexOf(sellOrderByKajal)].orderStatus
-        )
-        assertEquals(
-            "COMPLETED",
-            userList["arun"]!!.orderList[userList["arun"]!!.orderList.indexOf(sellOrderByArun)].orderStatus
-        )
+        assertEquals("PARTIAL", userList["sankar"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["kajal"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["arun"]!!.orderList.get(0).status)
     }
 
     @Test
     fun `It should place 2 SELL orders followed by a BUY order where the BUY order is complete`() {
         //Arrange
+        val orderService = OrderService()
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
-        val sellOrderByKajal = Order(1,10, "SELL", 10, "kajal", null)
-        userList["kajal"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(10)
-        executeOrderMatching(sellOrderByKajal)
+        val sellOrderByKajal = CreateOrderDTO("SELL", 10, 10, "NON_PERFORMANCE")
+        orderService.createOrder("kajal", sellOrderByKajal)
 
         userList["arun"]!!.userNonPerfInventory.addESOPsToInventory(50)
-        val sellOrderByArun = Order(2,10, "SELL", 10, "arun", null)
-        userList["arun"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(10)
-        executeOrderMatching(sellOrderByArun)
+        val sellOrderByArun = CreateOrderDTO("SELL", 10, 10, "NON_PERFORMANCE")
+        orderService.createOrder("arun", sellOrderByArun)
 
         userList["sankar"]!!.userWallet.addMoneyToWallet(250)
-        val buyOrderBySankar = Order(3,20, "BUY", 10, "sankar", null)
-        userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(200)
+        val buyOrderBySankar = CreateOrderDTO("BUY", 20, 10, null)
 
         //Act
-        executeOrderMatching(buyOrderBySankar)
+        orderService.createOrder("sankar", buyOrderBySankar)
 
         //Assert
         assertEquals(40, userList["kajal"]!!.userNonPerfInventory.getFreeInventory())
@@ -144,101 +141,76 @@ class OrderServiceTest {
         assertEquals(98, userList["kajal"]!!.userWallet.getFreeMoney())
         assertEquals(98, userList["arun"]!!.userWallet.getFreeMoney())
         assertEquals(0, userList["sankar"]!!.userWallet.getLockedMoney())
-        assertEquals(
-            "COMPLETED",
-            userList["sankar"]!!.orderList[userList["sankar"]!!.orderList.indexOf(buyOrderBySankar)].orderStatus
-        )
-        assertEquals(
-            "COMPLETED",
-            userList["kajal"]!!.orderList[userList["kajal"]!!.orderList.indexOf(sellOrderByKajal)].orderStatus
-        )
-        assertEquals(
-            "COMPLETED",
-            userList["arun"]!!.orderList[userList["arun"]!!.orderList.indexOf(sellOrderByArun)].orderStatus
-        )
+        assertEquals("COMPLETED", userList["sankar"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["kajal"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["arun"]!!.orderList.get(0).status)
     }
 
     @Test
     fun `It should place 1 SELL orders followed by a BUY order where the BUY order is complete`() {
         //Arrange
+        val orderService = OrderService()
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
-        val sellOrderByKajal = Order(1,10, "SELL", 10, "kajal", null)
-        userList["kajal"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(10)
-        executeOrderMatching(sellOrderByKajal)
+        val sellOrderByKajal = CreateOrderDTO("SELL", 10, 10, "NON_PERFORMANCE")
+        orderService.createOrder("kajal", sellOrderByKajal)
 
 
         userList["sankar"]!!.userWallet.addMoneyToWallet(250)
-        val buyOrderBySankar = Order(2,5, "BUY", 10, "sankar", null)
-        userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(50)
+        val buyOrderBySankar = CreateOrderDTO("BUY", 5, 10, null)
 
         //Act
-        executeOrderMatching(buyOrderBySankar)
+        orderService.createOrder("sankar", buyOrderBySankar)
 
         //Assert
         assertEquals(40, userList["kajal"]!!.userNonPerfInventory.getFreeInventory())
         assertEquals(5, userList["sankar"]!!.userNonPerfInventory.getFreeInventory())
         assertEquals(49, userList["kajal"]!!.userWallet.getFreeMoney())
         assertEquals(0, userList["sankar"]!!.userWallet.getLockedMoney())
-        assertEquals(
-            "COMPLETED",
-            userList["sankar"]!!.orderList[userList["sankar"]!!.orderList.indexOf(buyOrderBySankar)].orderStatus
-        )
-        assertEquals(
-            "PARTIAL",
-            userList["kajal"]!!.orderList[userList["kajal"]!!.orderList.indexOf(sellOrderByKajal)].orderStatus
-        )
+        assertEquals("COMPLETED", userList["sankar"]!!.orderList.get(0).status)
+        assertEquals("PARTIAL", userList["kajal"]!!.orderList.get(0).status)
     }
 
     @Test
     fun `It should place 1 SELL orders followed by a BUY order where the BUY order is partial`() {
         //Arrange
+        val orderService = OrderService()
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
-        val sellOrderByKajal = Order(1,10, "SELL", 10, "kajal", null)
-        userList["kajal"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(10)
-        executeOrderMatching(sellOrderByKajal)
+        val sellOrderByKajal = CreateOrderDTO("SELL", 10, 10, "NON_PERFORMANCE")
+        orderService.createOrder("kajal", sellOrderByKajal)
 
 
         userList["sankar"]!!.userWallet.addMoneyToWallet(250)
-        val buyOrderBySankar = Order(2, 15, "BUY", 10, "sankar", null)
-        userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(150)
+        val buyOrderBySankar = CreateOrderDTO("BUY", 15, 10, null)
 
         //Act
-        executeOrderMatching(buyOrderBySankar)
+        orderService.createOrder("sankar", buyOrderBySankar)
 
         //Assert
         assertEquals(40, userList["kajal"]!!.userNonPerfInventory.getFreeInventory())
         assertEquals(10, userList["sankar"]!!.userNonPerfInventory.getFreeInventory())
         assertEquals(98, userList["kajal"]!!.userWallet.getFreeMoney())
         assertEquals(50, userList["sankar"]!!.userWallet.getLockedMoney())
-        assertEquals(
-            "PARTIAL",
-            userList["sankar"]!!.orderList[userList["sankar"]!!.orderList.indexOf(buyOrderBySankar)].orderStatus
-        )
-        assertEquals(
-            "COMPLETED",
-            userList["kajal"]!!.orderList[userList["kajal"]!!.orderList.indexOf(sellOrderByKajal)].orderStatus
-        )
+        assertEquals("PARTIAL", userList["sankar"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["kajal"]!!.orderList.get(0).status)
     }
 
     @Test
     fun `It should place 2 BUY orders followed by a SELL order where the SELL order is partial`() {
         //Arrange
+        val orderService = OrderService()
         userList["sankar"]!!.userWallet.addMoneyToWallet(100)
-        val buyOrderBySankar = Order(1,10, "BUY", 10, "sankar", null)
-        userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(100)
-        executeOrderMatching(buyOrderBySankar)
+        val buyOrderBySankar = CreateOrderDTO("BUY", 10, 10, null)
+        orderService.createOrder("sankar", buyOrderBySankar)
 
         userList["aditya"]!!.userWallet.addMoneyToWallet(100)
-        val buyOrderByAditya = Order(2,10, "BUY", 10, "aditya", null)
-        userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(100)
-        executeOrderMatching(buyOrderByAditya)
+        val buyOrderByAditya = CreateOrderDTO("BUY", 10, 10, null)
+        orderService.createOrder("aditya", buyOrderByAditya)
 
         userList["kajal"]!!.userNonPerfInventory.addESOPsToInventory(50)
-        val sellOrderByKajal = Order(3,25, "SELL", 10, "kajal", null)
-        userList["kajal"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(25)
+        val sellOrderByKajal = CreateOrderDTO("SELL", 25, 10, "NON_PERFORMANCE")
 
         //Act
-        executeOrderMatching(sellOrderByKajal)
+        orderService.createOrder("kajal", sellOrderByKajal)
 
         //Assert
         assertEquals(25, userList["kajal"]!!.userNonPerfInventory.getFreeInventory())
@@ -247,36 +219,28 @@ class OrderServiceTest {
         assertEquals(196, userList["kajal"]!!.userWallet.getFreeMoney())
         assertEquals(0, userList["sankar"]!!.userWallet.getFreeMoney())
         assertEquals(0, userList["sankar"]!!.userWallet.getFreeMoney())
-        assertEquals("PARTIAL", sellOrders[sellOrders.indexOf(sellOrderByKajal)].orderStatus)
-        assertEquals(
-            "COMPLETED",
-            userList["sankar"]!!.orderList[userList["sankar"]!!.orderList.indexOf(buyOrderBySankar)].orderStatus
-        )
-        assertEquals(
-            "COMPLETED",
-            userList["aditya"]!!.orderList[userList["aditya"]!!.orderList.indexOf(buyOrderByAditya)].orderStatus
-        )
+        assertEquals("PARTIAL", userList["kajal"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["sankar"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["aditya"]!!.orderList.get(0).status)
     }
 
     @Test
     fun `It should place 2 BUY orders followed by a SELL order where the SELL order is complete`() {
         //Arrange
+        val orderService = OrderService()
         userList["kajal"]!!.userWallet.addMoneyToWallet(100)
-        val buyOrderByKajal = Order(1,10, "BUY", 10, "kajal", null)
-        userList["kajal"]!!.userWallet.moveMoneyFromFreeToLockedState(10 * 10)
-        executeOrderMatching(buyOrderByKajal)
+        val buyOrderByKajal = CreateOrderDTO("BUY", 10, 10, null)
+        orderService.createOrder("kajal",buyOrderByKajal)
 
         userList["arun"]!!.userWallet.addMoneyToWallet(100)
-        val buyOrderByArun = Order(2, 10, "BUY", 10, "arun", null)
-        userList["arun"]!!.userWallet.moveMoneyFromFreeToLockedState(10 * 10)
-        executeOrderMatching(buyOrderByArun)
+        val buyOrderByArun = CreateOrderDTO("BUY", 10, 10, null)
+        orderService.createOrder("arun",buyOrderByArun)
 
         userList["sankar"]!!.userNonPerfInventory.addESOPsToInventory(30)
-        val sellOrderBySankar = Order(3,20, "SELL", 10, "sankar", null)
-        userList["sankar"]!!.userNonPerfInventory.moveESOPsFromFreeToLockedState(20)
+        val sellOrderBySankar = CreateOrderDTO("SELL", 20, 10, "NON_PERFORMANCE")
 
         //Act
-        executeOrderMatching(sellOrderBySankar)
+        orderService.createOrder("sankar",sellOrderBySankar)
 
         //Assert
         assertEquals(10, userList["kajal"]!!.userNonPerfInventory.getFreeInventory())
@@ -288,18 +252,9 @@ class OrderServiceTest {
         assertEquals(10, userList["sankar"]!!.userNonPerfInventory.getFreeInventory())
         assertEquals(98 + 98, userList["sankar"]!!.userWallet.getFreeMoney())
 
-        assertEquals(
-            "COMPLETED",
-            userList["sankar"]!!.orderList[userList["sankar"]!!.orderList.indexOf(sellOrderBySankar)].orderStatus
-        )
-        assertEquals(
-            "COMPLETED",
-            userList["kajal"]!!.orderList[userList["kajal"]!!.orderList.indexOf(buyOrderByKajal)].orderStatus
-        )
-        assertEquals(
-            "COMPLETED",
-            userList["arun"]!!.orderList[userList["arun"]!!.orderList.indexOf(buyOrderByArun)].orderStatus
-        )
+        assertEquals("COMPLETED", userList["kajal"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["sankar"]!!.orderList.get(0).status)
+        assertEquals("COMPLETED", userList["arun"]!!.orderList.get(0).status)
     }
 
 

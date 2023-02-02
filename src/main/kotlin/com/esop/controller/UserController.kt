@@ -31,7 +31,7 @@ class UserController {
     lateinit var orderService: OrderService
 
     @Error(exception = Exception::class)
-    fun globalExceptionHandler(exception: Exception): HttpResponse<Map<String, ArrayList<String>>>{
+    fun globalExceptionHandler(exception: Exception): HttpResponse<Map<String, ArrayList<String>>> {
         return HttpResponse.badRequest(mapOf("errors" to arrayListOf(exception.toString())))
     }
 
@@ -41,12 +41,15 @@ class UserController {
     }
 
     @Error(exception = UnsatisfiedBodyRouteException::class)
-    fun onUnsatisfiedBodyRouteException(request: HttpRequest<*>, ex: UnsatisfiedBodyRouteException): HttpResponse<Map<String, List<*>>> {
+    fun onUnsatisfiedBodyRouteException(
+        request: HttpRequest<*>,
+        ex: UnsatisfiedBodyRouteException
+    ): HttpResponse<Map<String, List<*>>> {
         return HttpResponse.badRequest(mapOf("errors" to arrayListOf("request body missing")))
     }
 
     @Error(status = HttpStatus.NOT_FOUND, global = true)
-    fun onRouteNotFound() : HttpResponse<Map<String, List<*>>> {
+    fun onRouteNotFound(): HttpResponse<Map<String, List<*>>> {
         return HttpResponse.badRequest(mapOf("errors" to arrayListOf("route not found")))
     }
 
@@ -65,18 +68,18 @@ class UserController {
         return HttpResponse.serverError(mapOf("errors" to arrayListOf(ex.message)))
     }
 
-    @Post(uri="/register", consumes = [MediaType.APPLICATION_JSON],produces=[MediaType.APPLICATION_JSON])
-     fun register(@Body @Valid userData: UserCreationDTO): HttpResponse<*> {
+    @Post(uri = "/register", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
+    fun register(@Body @Valid userData: UserCreationDTO): HttpResponse<*> {
         val newUser = this.userService.registerUser(userData)
-        if(newUser["error"] != null) {
+        if (newUser["error"] != null) {
             return HttpResponse.badRequest(newUser)
         }
         return HttpResponse.ok(newUser)
     }
 
-    @Post(uri="/{userName}/order", consumes = [MediaType.APPLICATION_JSON],produces=[MediaType.APPLICATION_JSON])
+    @Post(uri = "/{userName}/order", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
     fun order(userName: String, @Body @Valid body: CreateOrderDTO): Any? {
-        val response = this.orderService.createOrder(userName,body)
+        val response = this.orderService.createOrder(userName, body)
 
         return HttpResponse.ok(response)
     }
@@ -85,18 +88,22 @@ class UserController {
     fun getAccountInformation(userName: String): HttpResponse<*> {
         val userData = this.userService.accountInformation(userName)
 
-        if(userData["error"] != null) {
+        if (userData["error"] != null) {
             return HttpResponse.badRequest(userData)
         }
 
         return HttpResponse.ok(userData)
     }
 
-    @Post(uri = "{userName}/inventory", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
-    fun addInventory(userName: String, @Body @Valid body: AddInventoryDTO): HttpResponse<*>{
-        val newInventory = this.userService.addingInventory(body,userName)
+    @Post(
+        uri = "{userName}/inventory",
+        consumes = [MediaType.APPLICATION_JSON],
+        produces = [MediaType.APPLICATION_JSON]
+    )
+    fun addInventory(userName: String, @Body @Valid body: AddInventoryDTO): HttpResponse<*> {
+        val newInventory = this.userService.addingInventory(body, userName)
 
-        if(newInventory["error"] != null) {
+        if (newInventory["error"] != null) {
             return HttpResponse.badRequest(newInventory)
         }
         return HttpResponse.ok(newInventory)
@@ -104,10 +111,10 @@ class UserController {
 
 
     @Post(uri = "{userName}/wallet", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
-    fun addWallet(userName: String, @Body @Valid body: AddWalletDTO) :HttpResponse<*> {
-        val addedMoney=this.userService.addingMoney(body,userName)
+    fun addWallet(userName: String, @Body @Valid body: AddWalletDTO): HttpResponse<*> {
+        val addedMoney = this.userService.addingMoney(body, userName)
 
-        if(addedMoney["error"] != null) {
+        if (addedMoney["error"] != null) {
             return HttpResponse.badRequest(addedMoney)
         }
         return HttpResponse.ok(addedMoney)
@@ -117,7 +124,7 @@ class UserController {
     @Get(uri = "/{userName}/orderHistory", produces = [MediaType.APPLICATION_JSON])
     fun orderHistory(userName: String): HttpResponse<*> {
         val orderHistoryData = OrderService.orderHistory(userName)
-        if(orderHistoryData is Map<*, *>){
+        if (orderHistoryData is Map<*, *>) {
             return HttpResponse.badRequest(orderHistoryData)
         }
         return HttpResponse.ok(orderHistoryData)

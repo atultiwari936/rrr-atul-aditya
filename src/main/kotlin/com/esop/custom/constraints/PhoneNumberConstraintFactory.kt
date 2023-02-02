@@ -1,6 +1,5 @@
-package com.esop.customConstraints
+package com.esop.custom.constraints
 
-import com.esop.customConstraints.PhoneNumber
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import io.micronaut.context.annotation.Factory
@@ -11,12 +10,12 @@ import jakarta.inject.Singleton
 @Factory
 class CustomConstraintFactory {
     @Singleton
-    fun phoneNumberValidator() : ConstraintValidator<PhoneNumber, String> {
+    fun phoneNumberValidator(): ConstraintValidator<PhoneNumber, String> {
         val phoneUtil = PhoneNumberUtil.getInstance()
 
         return ConstraintValidator { value, annotation, context ->
             value == null || try {
-                 phoneUtil.isValidNumber(phoneUtil.parse(value, null))
+                phoneUtil.isValidNumber(phoneUtil.parse(value, null))
             } catch (e: NumberParseException) {
                 context.messageTemplate(e.message)
                 false

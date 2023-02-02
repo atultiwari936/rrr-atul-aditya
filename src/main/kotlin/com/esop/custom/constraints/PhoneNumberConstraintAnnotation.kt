@@ -1,6 +1,7 @@
-package com.esop.customConstraints
+package com.esop.custom.constraints
 
 import javax.validation.Constraint
+
 @Retention(AnnotationRetention.RUNTIME)
 @Constraint(validatedBy = [])
 annotation class PhoneNumber(

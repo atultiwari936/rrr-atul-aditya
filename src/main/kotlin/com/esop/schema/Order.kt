@@ -7,48 +7,50 @@ class Order(
     var price: Long,
     var userName: String,
     var esopType: String?
-)
-{
+) {
     var timeStamp = System.currentTimeMillis()
     var remainingQuantity: Long = quantity
-    var orderStatus: String = "PENDING" // COMPLETED, PARTIAL, PENDING
-    var orderFilledLogs: MutableList<OrderFilledLog> = mutableListOf()
+    var status: String = "PENDING" // COMPLETED, PARTIAL, PENDING
+    var executionHistory: MutableList<OrderFilledLog> = mutableListOf()
     var inventoryPriority: Int = 0
 
     init {
-        if(typeIsSellForPerformance()){
+        if (isTypeSellAndEsopTypePerformance()) {
             inventoryPriority = 1
-        }else if (typeIsSellForNonPerformance()){
+        } else if (isTypeSellAndEsopTypeNonPerformance()) {
             inventoryPriority = 2
         }
     }
 
-    private fun typeIsSellForPerformance() = type == "SELL" && esopType == "PERFORMANCE"
-    private fun typeIsSellForNonPerformance() = type == "SELL" && esopType == "NON_PERFORMANCE"
-    fun isComplete():Boolean{
-        return orderStatus == "COMPLETED"
+    private fun isTypeSellAndEsopTypePerformance() = type == "SELL" && esopType == "PERFORMANCE"
+
+    private fun isTypeSellAndEsopTypeNonPerformance() = type == "SELL" && esopType == "NON_PERFORMANCE"
+
+    fun isComplete(): Boolean {
+        return status == "COMPLETED"
     }
 
-    fun updateOrderStatus(executedOrder: OrderFilledLog){
-        if(executedOrder.quantity == remainingQuantity){
-            orderStatus = "COMPLETED"
-        }else if(executedOrder.quantity < remainingQuantity){
-            orderStatus = "PARTIAL"
+    fun updateOrderStatus(executedOrder: OrderFilledLog) {
+        if (executedOrder.quantity == remainingQuantity) {
+            status = "COMPLETED"
+        } else if (executedOrder.quantity < remainingQuantity) {
+            status = "PARTIAL"
         }
     }
 
-    fun updateRemainingQuantityBySubtractingOrderExecutedQuantity(quantityToBeUpdated: Long){
+    fun subtractFromRemainingQuantity(quantityToBeUpdated: Long) {
         remainingQuantity -= quantityToBeUpdated
     }
-    fun addOrderFilledLogs(executedOrder :OrderFilledLog){
-        orderFilledLogs.add(executedOrder)
+
+    fun addOrderFilledLogs(executedOrder: OrderFilledLog) {
+        executionHistory.add(executedOrder)
     }
 
     fun isBuyOrder(): Boolean {
         return this.type == "BUY"
     }
 
-    fun isSellOrder(): Boolean{
+    fun isSellOrder(): Boolean {
         return this.type == "SELL"
     }
 }

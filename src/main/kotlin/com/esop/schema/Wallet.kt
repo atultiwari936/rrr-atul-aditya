@@ -4,7 +4,7 @@ import com.esop.constant.MAX_WALLET_CAPACITY
 import com.esop.exception.InsufficientFundException
 import com.esop.exception.WalletLimitExceededException
 
-class Wallet{
+class Wallet {
     private var freeMoney: Long = 0
     private var lockedMoney: Long = 0
 
@@ -17,30 +17,30 @@ class Wallet{
     }
 
     fun checkWalletWillNotOverflowOnAdding(amount: Long) {
-        if (willWalletOverflowOnAdding(amount)) throw WalletLimitExceededException()
+        if (willWalletOverflowOnAdding(amount)) throw WalletLimitExceededException("Wallet Limit exceeded.")
     }
 
-    fun addMoneyToWallet(amountToBeAdded : Long){
+    fun addMoneyToWallet(amountToBeAdded: Long) {
         checkWalletWillNotOverflowOnAdding(amountToBeAdded)
 
         this.freeMoney = this.freeMoney + amountToBeAdded
     }
 
-    fun moveMoneyFromFreeToLockedState(amountToBeLocked : Long){
-        if( this.freeMoney < amountToBeLocked) throw InsufficientFundException()
+    fun moveMoneyFromFreeToLockedState(amountToBeLocked: Long) {
+        if (this.freeMoney < amountToBeLocked) throw InsufficientFundException("Insufficient funds.")
         this.freeMoney = this.freeMoney - amountToBeLocked
         this.lockedMoney = this.lockedMoney + amountToBeLocked
     }
 
-    fun getFreeMoney():Long{
+    fun getFreeMoney(): Long {
         return freeMoney
     }
 
-    fun getLockedMoney():Long{
+    fun getLockedMoney(): Long {
         return lockedMoney
     }
 
-    fun removeMoneyFromLockedState( amountToBeRemoved: Long){
+    fun removeMoneyFromLockedState(amountToBeRemoved: Long) {
         this.lockedMoney = this.lockedMoney - amountToBeRemoved
     }
 }

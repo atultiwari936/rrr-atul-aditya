@@ -35,7 +35,7 @@ class User(
     }
 
     private fun createBuyOrder(orderDetails: CreateOrderDTO): Order {
-        userNonPerfInventory.checkInventoryWillNotOverflowOnAdding(orderDetails.quantity!!)
+        userNonPerfInventory.checkIfInventoryWillNotOverflowOnAdding(orderDetails.quantity!!)
         userWallet.moveMoneyFromFreeToLockedState(orderDetails.price!! * orderDetails.quantity!!)
         return Order(
             orderID = OrderService.generateOrderId(),

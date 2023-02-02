@@ -1,7 +1,3 @@
 package com.esop.exception
 
-class InsufficientPerformanceInventoryException : Exception() {
-    override fun toString(): String {
-        return "Insufficient performance inventory."
-    }
-}
+class InsufficientPerformanceInventoryException(message: String) : Exception(message)
