@@ -4,10 +4,7 @@ import com.esop.dto.validation.PhoneNumber
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.micronaut.core.annotation.Introspected
-import javax.validation.constraints.Email
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Pattern
-import javax.validation.constraints.Size
+import javax.validation.constraints.*
 
 
 const val USERNAME_REGEX = "^[a-zA-Z]+([a-zA-Z]|_|[0-9])*"
@@ -52,4 +49,9 @@ class UserCreationDTO @JsonCreator constructor(
     @field:Pattern(regexp = "($USERNAME_REGEX| *)", message =
     "User Name should only consist alphabets, numbers or underscore(s) and it must start with an alphabet.")
     var username: String? = null,
-)
+) {
+    @AssertTrue(message = "combination of First Name and Last Name should not exceed 64 characters")
+    fun isCombinationOfFirstNameAndLastNameIsLessThanLimit(): Boolean {
+        return (firstName == null || lastName == null || (firstName + lastName).length <= 64)
+    }
+}
