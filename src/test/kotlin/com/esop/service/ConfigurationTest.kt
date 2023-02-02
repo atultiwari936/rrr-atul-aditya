@@ -10,7 +10,7 @@ import java.math.BigInteger
 import java.util.stream.Stream
 
 @MicronautTest
-class ConfigurationServiceTest {
+class ConfigurationTest {
     companion object {
         @JvmStatic
         private fun validMaxWalletValues(): Stream<BigInteger> {
@@ -21,7 +21,7 @@ class ConfigurationServiceTest {
         }
 
         @JvmStatic
-        private fun inValidMaxWalletValues(): Stream<BigInteger> {
+        private fun invalidMaxWalletValues(): Stream<BigInteger> {
             return Stream.of(
                 BigInteger.valueOf(0),
                 BigInteger.valueOf(-1),
@@ -50,20 +50,16 @@ class ConfigurationServiceTest {
         private fun validPlatformFeePercentageValues(): Stream<Double> {
             return Stream.of(
                 0.0,
-                1.0,
-                0.3,
-                0.4,
-                0.77
+                100.0,
+                46.66
             )
         }
 
         @JvmStatic
-        private fun inValidPlatformFeePercentageValues(): Stream<Double> {
+        private fun invalidPlatformFeePercentageValues(): Stream<Double> {
             return Stream.of(
-                1.00001,
-                -0.01,
-                2.0,
-                9283.0
+                100.1,
+                -0.01
             )
         }
     }
@@ -75,14 +71,14 @@ class ConfigurationServiceTest {
         val properties = mapOf("app.max-wallet-limit" to maxWalletLimit)
 
         val ctx = ApplicationContext.run(properties)
-        val configurationService = ctx.getBean(ConfigurationService::class.java)
-        val actualMaxWalletLimit = configurationService.getMaxWalletLimit()
+        val configuration = ctx.getBean(Configuration::class.java)
+        val actualMaxWalletLimit = configuration.getMaxWalletLimit()
 
         Assertions.assertEquals(maxWalletLimit, actualMaxWalletLimit)
     }
 
     @ParameterizedTest
-    @MethodSource("inValidMaxWalletValues")
+    @MethodSource("invalidMaxWalletValues")
     fun `It should throw Exception when the given maximum wallet limit configuration is not a positive Integer`(maxWalletLimit: BigInteger) {
         val properties = mapOf("app.max-wallet-limit" to maxWalletLimit)
 
@@ -98,8 +94,8 @@ class ConfigurationServiceTest {
         val properties = mapOf("app.max-inventory-limit" to maxInventoryLimit)
 
         val ctx = ApplicationContext.run(properties)
-        val configurationService = ctx.getBean(ConfigurationService::class.java)
-        val actualMaxInventoryLimit = configurationService.getMaxInventoryLimit()
+        val configuration = ctx.getBean(Configuration::class.java)
+        val actualMaxInventoryLimit = configuration.getMaxInventoryLimit()
 
         Assertions.assertEquals(maxInventoryLimit, actualMaxInventoryLimit)
     }
@@ -120,14 +116,14 @@ class ConfigurationServiceTest {
         val properties = mapOf("app.platform-fee-percentage" to platformFeePercentage)
 
         val ctx = ApplicationContext.run(properties)
-        val configurationService = ctx.getBean(ConfigurationService::class.java)
-        val actualPlatformFeePercentage = configurationService.getPlatformFeePercentage()
+        val configuration = ctx.getBean(Configuration::class.java)
+        val actualPlatformFeePercentage = configuration.getPlatformFeePercentage()
 
         Assertions.assertEquals(platformFeePercentage, actualPlatformFeePercentage)
     }
 
     @ParameterizedTest
-    @MethodSource("inValidPlatformFeePercentageValues")
+    @MethodSource("invalidPlatformFeePercentageValues")
     fun `It should throw Exception when the given platform fee percentage configuration is not between 0 and 1 both inclusive`(platformFeePercentage: Double) {
         val properties = mapOf("app.platform-fee-percentage" to platformFeePercentage)
 
