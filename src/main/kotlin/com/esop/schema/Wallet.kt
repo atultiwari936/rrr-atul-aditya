@@ -1,8 +1,8 @@
 package com.esop.schema
 
 import com.esop.constant.MAX_WALLET_CAPACITY
-import com.esop.exception.InsufficientFundException
-import com.esop.exception.WalletLimitExceededException
+import com.esop.custom.exceptions.InsufficientFundException
+import com.esop.custom.exceptions.WalletLimitExceededException
 
 class Wallet {
     private var freeMoney: Long = 0
