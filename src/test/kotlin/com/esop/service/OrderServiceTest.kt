@@ -106,7 +106,7 @@ class OrderServiceTest {
         assertEquals(98, userList["kajal"]!!.userWallet.getFreeMoney())
         assertEquals(98, userList["arun"]!!.userWallet.getFreeMoney())
         assertEquals(50, userList["sankar"]!!.userWallet.getLockedMoney())
-        assertEquals("PARTIAL", buyOrders[buyOrders.indexOf(buyOrderBySankar)]!!.orderStatus)
+        assertEquals("PARTIAL", buyOrders[buyOrders.indexOf(buyOrderBySankar)].orderStatus)
         assertEquals(
             "COMPLETED",
             userList["kajal"]!!.orderList[userList["kajal"]!!.orderList.indexOf(sellOrderByKajal)].orderStatus
@@ -228,6 +228,7 @@ class OrderServiceTest {
         userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(100)
         placeOrder(buyOrderBySankar)
 
+
         userList["aditya"]!!.userWallet.addMoneyToWallet(100)
         val buyOrderByAditya = Order(10, "BUY", 10, "aditya")
         userList["sankar"]!!.userWallet.moveMoneyFromFreeToLockedState(100)
@@ -247,7 +248,7 @@ class OrderServiceTest {
         assertEquals(196, userList["kajal"]!!.userWallet.getFreeMoney())
         assertEquals(0, userList["sankar"]!!.userWallet.getFreeMoney())
         assertEquals(0, userList["sankar"]!!.userWallet.getFreeMoney())
-        assertEquals("PARTIAL", sellOrders[sellOrders.indexOf(sellOrderByKajal)]!!.orderStatus)
+        assertEquals("PARTIAL", sellOrders[sellOrders.indexOf(sellOrderByKajal)].orderStatus)
         assertEquals(
             "COMPLETED",
             userList["sankar"]!!.orderList[userList["sankar"]!!.orderList.indexOf(buyOrderBySankar)].orderStatus
@@ -301,6 +302,5 @@ class OrderServiceTest {
             userList["arun"]!!.orderList[userList["arun"]!!.orderList.indexOf(buyOrderByArun)].orderStatus
         )
     }
-
 
 }

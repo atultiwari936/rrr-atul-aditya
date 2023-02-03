@@ -1,10 +1,10 @@
 package com.esop.dto
 
-import com.esop.dto.validation.PhoneNumber
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.micronaut.core.annotation.Introspected
 import javax.validation.constraints.*
+import com.esop.validators.*
 
 
 const val USERNAME_REGEX = "^[a-zA-Z]+([a-zA-Z]|_|[0-9])*"
@@ -30,26 +30,42 @@ class UserCreationDTO @JsonCreator constructor(
     @field:Pattern(regexp = CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX, message = "Last Name should not contain special characters")
     var lastName: String? = null,
 
+    @field:NotBlank(message = "First Name can not be missing or empty.")
+    @field:Size(max = 30, message = "First Name should not exceed 30 characters.")
+    @field:Pattern(regexp = "($ALPHABET_SEQUENCE_REGEX| *)", message = "First Name can only contain alphabets.")
+    var firstName: String? = null,
+
+    @JsonProperty("lastName")
+    @field:NotBlank(message = "Last Name can not be missing or empty.")
+    @field:Size(max = 30, message = "Last Name should not exceed 30 characters")
+    @field:Pattern(regexp = "($ALPHABET_SEQUENCE_REGEX| *)", message = "Last Name can only contain alphabets")
+    var lastName: String? = null,
+
     @JsonProperty("phoneNumber")
-    @field:NotBlank(message = "Phone Number is required")
-    @field:PhoneNumber()
+    @field:NotBlank(message = "Phone Number can not be missing or empty.")
+    @field:PhoneNumberValidator
+    @field:PhoneNumberAlreadyExists
     var phoneNumber: String? = null,
 
     @JsonProperty("email")
-    @field:NotBlank(message = "Email is required")
-    @field:Size(max=30, message = "Email should not exceed 30 characters")
-    @field:Email(regexp = "($EMAIL_REGEX| *)", message = "Invalid Email-ID.")
+    @field:NotBlank(message = "Email can not be missing or empty.")
+    @field:EmailValidator
+    @field:EmailAlreadyExistsValidator
     var email: String? = null,
 
     @JsonProperty("username")
-    @field:NotBlank(message = "User Name is required")
-    @field:Size(max=20, message = "User Name should not exceed 20 characters")
-    @field:Pattern(regexp = "($USERNAME_REGEX| *)", message =
-    "User Name should only consist alphabets, numbers or underscore(s) and it must start with an alphabet.")
-    var username: String? = null,
-) {
+    @field:NotBlank(message = "User Name can not be missing or empty.")
+    @field:Size(max = 20, message = "User Name should not exceed 20 characters")
+    @field:Pattern(
+        regexp = "($USERNAME_REGEX| *)", message =
+        "User Name should only consist alphabets, numbers or underscore(s) and it must start with an alphabet."
+    )
+    @field:UsernameValidator
+    var username: String? = null
+){
     @AssertTrue(message = "combination of First Name and Last Name should not exceed 64 characters")
     fun isCombinationOfFirstNameAndLastNameIsLessThanLimit(): Boolean {
         return (firstName == null || lastName == null || (firstName + lastName).length <= 64)
     }
 }
+
