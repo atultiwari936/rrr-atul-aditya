@@ -24,10 +24,10 @@ class UserCreationDTO @JsonCreator constructor(
     var firstName: String? = null,
 
     @JsonProperty("lastName")
-    @field:NotBlank(message = "First Name can not be missing or empty.")
-    @field:Pattern(regexp = "^(\\S+\\s?)*\$", message = "First Name should not contain consecutive whitespaces")
-    @field:Pattern(regexp = "[\\D]*", message = "First Name should not contain number digits")
-    @field:Pattern(regexp = CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX, message = "First Name should not contain special characters")
+    @field:NotBlank(message = "Last Name can not be missing or empty.")
+    @field:Pattern(regexp = "^(\\S+\\s?)*\$", message = "Last Name should not contain consecutive whitespaces")
+    @field:Pattern(regexp = "[\\D]*", message = "Last Name should not contain number digits")
+    @field:Pattern(regexp = CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX, message = "Last Name should not contain special characters")
     var lastName: String? = null,
 
     @JsonProperty("phoneNumber")
