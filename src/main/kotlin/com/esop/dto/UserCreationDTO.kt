@@ -17,32 +17,32 @@ const val CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX = "^[\\p{L}\\
 @Introspected
 class UserCreationDTO @JsonCreator constructor(
     @JsonProperty("firstName")
-    @field:NotBlank(message = "First Name can not be missing or empty.")
+    @field:NotBlank(message = "First Name is required")
     @field:Pattern(regexp = "^(\\S+\\s?)*\$", message = "First Name should not contain consecutive whitespaces")
     @field:Pattern(regexp = "[\\D]*", message = "First Name should not contain number digits")
     @field:Pattern(regexp = CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX, message = "First Name should not contain special characters")
     var firstName: String? = null,
 
     @JsonProperty("lastName")
-    @field:NotBlank(message = "Last Name can not be missing or empty.")
+    @field:NotBlank(message = "Last Name is required")
     @field:Pattern(regexp = "^(\\S+\\s?)*\$", message = "Last Name should not contain consecutive whitespaces")
     @field:Pattern(regexp = "[\\D]*", message = "Last Name should not contain number digits")
     @field:Pattern(regexp = CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX, message = "Last Name should not contain special characters")
     var lastName: String? = null,
 
     @JsonProperty("phoneNumber")
-    @field:NotBlank(message = "Phone Number can not be missing or empty.")
+    @field:NotBlank(message = "Phone Number is required")
     @field:PhoneNumber()
     var phoneNumber: String? = null,
 
     @JsonProperty("email")
-    @field:NotBlank(message = "Email can not be missing or empty.")
+    @field:NotBlank(message = "Email is required")
     @field:Size(max=30, message = "Email should not exceed 30 characters")
     @field:Email(regexp = "($EMAIL_REGEX| *)", message = "Invalid Email-ID.")
     var email: String? = null,
 
     @JsonProperty("username")
-    @field:NotBlank(message = "User Name can not be missing or empty.")
+    @field:NotBlank(message = "User Name is required")
     @field:Size(max=20, message = "User Name should not exceed 20 characters")
     @field:Pattern(regexp = "($USERNAME_REGEX| *)", message =
     "User Name should only consist alphabets, numbers or underscore(s) and it must start with an alphabet.")
