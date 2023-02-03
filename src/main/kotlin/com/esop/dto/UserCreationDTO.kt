@@ -18,7 +18,6 @@ const val CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX = "^[\\p{L}\\
 class UserCreationDTO @JsonCreator constructor(
     @JsonProperty("firstName")
     @field:NotBlank(message = "First Name can not be missing or empty.")
-    @field:Size(max=30, message = "First Name should not exceed 30 characters.")
     @field:Pattern(regexp = "^(\\S+\\s?)*\$", message = "First Name should not contain consecutive whitespaces")
     @field:Pattern(regexp = "[\\D]*", message = "First Name should not contain number digits")
     @field:Pattern(regexp = CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX, message = "First Name should not contain special characters")
@@ -26,7 +25,6 @@ class UserCreationDTO @JsonCreator constructor(
 
     @JsonProperty("lastName")
     @field:NotBlank(message = "First Name can not be missing or empty.")
-    @field:Size(max=30, message = "First Name should not exceed 30 characters.")
     @field:Pattern(regexp = "^(\\S+\\s?)*\$", message = "First Name should not contain consecutive whitespaces")
     @field:Pattern(regexp = "[\\D]*", message = "First Name should not contain number digits")
     @field:Pattern(regexp = CHARS_EXCEPT_LANGUAGE_SCRIPT_DIGITS_AND_WHITESPACE_REGEX, message = "First Name should not contain special characters")
