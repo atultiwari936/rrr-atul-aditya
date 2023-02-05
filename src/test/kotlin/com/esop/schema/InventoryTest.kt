@@ -1,8 +1,7 @@
-package com.esop
+package com.esop.schema
 
 import com.esop.constant.MAX_INVENTORY_CAPACITY
 import com.esop.custom.exceptions.InventoryLimitExceededException
-import com.esop.schema.Inventory
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
