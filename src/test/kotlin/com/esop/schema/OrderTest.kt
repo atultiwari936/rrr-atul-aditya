@@ -121,7 +121,7 @@ class OrderTest {
     @Test
     fun `it order type is SELL then isSellOrder should return True`() {
         //Arrange
-        val order = Order(1, 10, "SELL", 10, "sankar", "NON_PERFORMANCE")
+        val order = Order(1, 10, "SELL", 10, "sankar", "PERFORMANCE")
 
         //Act
         val response = order.isSellOrder()
@@ -140,5 +140,18 @@ class OrderTest {
 
         //Assert
         assertFalse(response)
+    }
+
+    @Test
+    fun `test to check addOrderExecutionHistory`(){
+        //Arrange
+        val order = Order(1, 10, "BUY", 10, "sankar", null)
+        val orderExecution = OrderFilledLog(10,10,"PERFORMANCE", "kajal", "sankar")
+
+        //Act
+        order.addOrderExecutionHistory(orderExecution)
+
+        //Assert
+        assertTrue(order.executionHistory.contains(orderExecution))
     }
 }

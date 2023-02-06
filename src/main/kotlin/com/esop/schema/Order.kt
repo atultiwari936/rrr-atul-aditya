@@ -42,7 +42,7 @@ class Order(
         remainingQuantity -= quantityToBeUpdated
     }
 
-    fun addOrderFilledLogs(executedOrder: OrderFilledLog) {
+    fun addOrderExecutionHistory(executedOrder: OrderFilledLog) {
         executionHistory.add(executedOrder)
     }
 

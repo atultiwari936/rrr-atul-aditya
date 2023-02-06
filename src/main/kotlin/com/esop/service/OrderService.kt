@@ -117,8 +117,8 @@ class OrderService {
                         sellOrders.remove(sellOrder)
                     }
 
-                    buyOrder.addOrderFilledLogs(orderFilledLog)
-                    sellOrder.addOrderFilledLogs(orderFilledLog)
+                    buyOrder.addOrderExecutionHistory(orderFilledLog)
+                    sellOrder.addOrderExecutionHistory(orderFilledLog)
                 }
             }
         }
@@ -169,8 +169,8 @@ class OrderService {
                         sellOrders.remove(sellOrder)
                     }
 
-                    buyOrder.addOrderFilledLogs(orderFilledLog)
-                    sellOrder.addOrderFilledLogs(orderFilledLog)
+                    buyOrder.addOrderExecutionHistory(orderFilledLog)
+                    sellOrder.addOrderExecutionHistory(orderFilledLog)
                 }
             }
         }
