@@ -33,7 +33,7 @@ class OrderTest {
     }
 
     @Test
-    fun `if status is PENDING isComplete should return true`() {
+    fun `if status is PENDING isComplete should return false`() {
         //Arrange
         val order = Order(1, 10, "BUY", 10, "sankar", null)
 
