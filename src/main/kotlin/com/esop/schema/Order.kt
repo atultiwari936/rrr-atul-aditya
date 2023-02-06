@@ -1,5 +1,13 @@
 package com.esop.schema
 
+import com.esop.schema.InvenrtoryPriority.*
+
+enum class InvenrtoryPriority(val priority: Int){
+    NONE(0),
+    PERFORMANCE(1),
+    NON_PERFORMANCE(1)
+}
+
 class Order(
     var orderID: Long,
     var quantity: Long,
@@ -12,13 +20,13 @@ class Order(
     var remainingQuantity: Long = quantity
     var status: String = "PENDING" // COMPLETED, PARTIAL, PENDING
     var executionHistory: MutableList<OrderFilledLog> = mutableListOf()
-    var inventoryPriority: Int = 0
+    var inventoryPriority:InvenrtoryPriority = NONE
 
     init {
         if (isTypeSellAndEsopTypePerformance()) {
-            inventoryPriority = 1
+            inventoryPriority = PERFORMANCE
         } else if (isTypeSellAndEsopTypeNonPerformance()) {
-            inventoryPriority = 2
+            inventoryPriority = NON_PERFORMANCE
         }
     }
 
