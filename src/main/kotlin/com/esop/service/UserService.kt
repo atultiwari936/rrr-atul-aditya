@@ -14,14 +14,15 @@ class UserService(private val userRecords: UserRecords) {
 
     fun orderCheckBeforePlace(order: Order): MutableList<String> {
         val errorList = mutableListOf<String>()
-        val user = userRecords.getUser(order.userName)!!
-        val wallet = user.userWallet
-        val nonPerformanceInventory = user.userNonPerfInventory
 
         if (!userRecords.checkIfUserExists(order.userName)) {
             errorList.add("User doesn't exist.")
             return errorList
         }
+
+        val user = userRecords.getUser(order.userName)!!
+        val wallet = user.userWallet
+        val nonPerformanceInventory = user.userNonPerfInventory
 
         if (order.type == "BUY") {
             nonPerformanceInventory.assertInventoryWillNotOverflowOnAdding(order.quantity)
