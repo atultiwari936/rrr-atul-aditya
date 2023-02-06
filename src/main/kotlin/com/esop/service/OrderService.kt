@@ -180,9 +180,9 @@ class OrderService {
                 override fun compare(o1: Order, o2: Order): Int {
 
                     if (o1.inventoryPriority != o2.inventoryPriority)
-                        return o1.inventoryPriority - o2.inventoryPriority
+                        return o1.inventoryPriority.priority - o2.inventoryPriority.priority
 
-                    if (o1.inventoryPriority == 1) {
+                    if (o1.inventoryPriority.priority == 1) {
                         if (o1.timeStamp < o2.timeStamp)
                             return -1
                         return 1
