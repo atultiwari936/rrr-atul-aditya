@@ -18,27 +18,6 @@ class PlatformFeeTest {
     }
 
     @Test
-    fun `it should add the platform fee to the total platform fee`() {
-        val amountToBeAddedToPlatformFee = 10L
-
-        platformFee.addPlatformFee(amountToBeAddedToPlatformFee)
-
-        assertEquals(BigInteger("10"), platformFee.getPlatformFee())
-    }
-
-
-    @Test
-    fun `it should not add the value which is less than zero`() {
-        val amountToBeAddedToPlatformFee: Long = -1
-
-        Assertions.assertThrows(PlatformFeeLessThanZeroException::class.java) {
-            platformFee.addPlatformFee(amountToBeAddedToPlatformFee)
-        }
-
-        assertEquals(BigInteger("0"), platformFee.getPlatformFee())
-    }
-
-    @Test
     fun `it should deduct platform fee from the given amount as ESOP type is NON_PERFORMANCE`() {
         val amount = 1000L
 
@@ -70,5 +49,4 @@ class PlatformFeeTest {
             platformFee.deductPlatformFeeFrom(tradedAmount, "NON_PERFORMANCE")
         }
     }
-
 }

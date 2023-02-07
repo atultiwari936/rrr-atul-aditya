@@ -1,6 +1,5 @@
 package com.esop.service
 
-import com.esop.PlatformFeeLessThanZeroException
 import com.esop.constant.FEE_PERCENTAGE
 import jakarta.inject.Singleton
 import java.math.BigInteger
@@ -11,12 +10,6 @@ import kotlin.math.round
 class PlatformFee {
 
     private var totalPlatformFee: BigInteger = BigInteger("0")
-
-    fun addPlatformFee(fee: Long) {
-        if (fee < 0)
-            throw PlatformFeeLessThanZeroException()
-        totalPlatformFee += fee.toBigInteger()
-    }
 
     fun getPlatformFee(): BigInteger {
         return totalPlatformFee
