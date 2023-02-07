@@ -7,7 +7,7 @@ import kotlin.math.round
 
 
 @Singleton
-class PlatformFee {
+class PlatformFeeService {
 
     private var totalPlatformFee: BigInteger = BigInteger("0")
 

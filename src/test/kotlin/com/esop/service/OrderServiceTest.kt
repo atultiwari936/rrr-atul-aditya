@@ -16,13 +16,13 @@ class OrderServiceTest {
 
     private lateinit var userRecords:UserRecords
     private lateinit var orderService:OrderService
-    private lateinit var platformFee: PlatformFee
+    private lateinit var platformFeeService: PlatformFeeService
 
     @BeforeEach
     fun `It should create user`() {
         userRecords = UserRecords()
-        platformFee = PlatformFee()
-        orderService = OrderService(userRecords, platformFee)
+        platformFeeService = PlatformFeeService()
+        orderService = OrderService(userRecords, platformFeeService)
 
         val buyer1 = User("Sankaranarayanan", "M", "7550276216", "sankaranarayananm@sahaj.ai", "sankar")
         val buyer2 = User("Aditya", "Tiwari", "", "aditya@sahaj.ai", "aditya")

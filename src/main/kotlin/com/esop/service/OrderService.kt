@@ -3,13 +3,16 @@ package com.esop.service
 
 import com.esop.constant.errors
 import com.esop.repository.UserRecords
-import com.esop.schema.*
+import com.esop.schema.History
+import com.esop.schema.Order
+import com.esop.schema.OrderFilledLog
+import com.esop.schema.User
 import jakarta.inject.Singleton
 
 @Singleton
 class OrderService(
     private val userRecords: UserRecords,
-    private val platformFee: PlatformFee
+    private val platformFeeService: PlatformFeeService
 ) {
     companion object {
         private var orderId = 1L
@@ -50,7 +53,7 @@ class OrderService(
         buyer: User,
         seller: User
     ) {
-        val adjustedSellAmount = platformFee.deductPlatformFeeFrom(sellAmount, esopType)
+        val adjustedSellAmount = platformFeeService.deductPlatformFeeFrom(sellAmount, esopType)
 
         buyer.userWallet.removeMoneyFromLockedState(sellAmount)
         seller.userWallet.addMoneyToWallet(adjustedSellAmount)
