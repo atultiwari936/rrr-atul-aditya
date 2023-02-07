@@ -1,7 +1,7 @@
 package com.esop.service
 
 
-import com.esop.constant.errors
+import com.esop.errors
 import com.esop.repository.UserRecords
 import com.esop.schema.History
 import com.esop.schema.Order

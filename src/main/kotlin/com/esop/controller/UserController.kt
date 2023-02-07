@@ -108,8 +108,8 @@ class UserController {
         }
         val userOrderOrErrors = orderService.placeOrder(order)
 
-        if (userOrderOrErrors["orderId"] != null) {
-            return HttpResponse.ok(
+        return if(userOrderOrErrors["orderId"] != null) {
+            HttpResponse.ok(
                 mapOf(
                     "orderId" to userOrderOrErrors["orderId"],
                     "quantity" to body.quantity,
@@ -118,7 +118,7 @@ class UserController {
                 )
             )
         } else {
-            return HttpResponse.badRequest(userOrderOrErrors)
+            HttpResponse.badRequest(userOrderOrErrors)
         }
     }
 

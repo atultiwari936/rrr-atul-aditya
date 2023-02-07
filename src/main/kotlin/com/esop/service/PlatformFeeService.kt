@@ -1,6 +1,6 @@
 package com.esop.service
 
-import com.esop.constant.FEE_PERCENTAGE
+import com.esop.FEE_PERCENTAGE
 import jakarta.inject.Singleton
 import java.math.BigInteger
 import kotlin.math.round

@@ -7,7 +7,7 @@ class WalletTest {
 
 
     @Test
-    fun `it should move money from locked to free state`(){
+    fun `it should move money from locked to free state`() {
         val wallet = Wallet()
         wallet.addMoneyToWallet(100)
         wallet.moveMoneyFromFreeToLockedState(50)
@@ -18,7 +18,7 @@ class WalletTest {
         val expectedLockedAmount = 26L
 
         assertEquals(expectedFreeAmount, wallet.getFreeMoney())
-        assertEquals(expectedLockedAmount,wallet.getLockedMoney())
+        assertEquals(expectedLockedAmount, wallet.getLockedMoney())
     }
 
 }

@@ -42,6 +42,7 @@ class User(
     fun lockAmount(price: Long): String {
         return userWallet.moveMoneyFromFreeToLockedState(price)
     }
+
     private fun getInventory(type: String): Inventory {
         if (type == "PERFORMANCE") return userPerformanceInventory
         return userNonPerfInventory
