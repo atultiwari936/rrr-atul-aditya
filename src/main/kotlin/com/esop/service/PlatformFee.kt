@@ -1,11 +1,11 @@
-package com.esop.schema
+package com.esop.service
 
 import com.esop.PlatformFeeLessThanZeroException
+import com.esop.constant.FEE_PERCENTAGE
 import jakarta.inject.Singleton
 import java.math.BigInteger
 import kotlin.math.round
 
-private const val FEE_PERCENTAGE = 0.02
 
 @Singleton
 class PlatformFee {
@@ -32,5 +32,4 @@ class PlatformFee {
         totalPlatformFee += fee.toBigInteger()
         return tradedAmount - fee
     }
-
 }

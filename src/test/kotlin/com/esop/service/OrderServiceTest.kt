@@ -2,7 +2,6 @@ package com.esop.service
 
 import com.esop.repository.UserRecords
 import com.esop.schema.Order
-import com.esop.schema.PlatformFee
 import com.esop.schema.User
 import com.esop.service.OrderService.Companion.buyOrders
 import com.esop.service.OrderService.Companion.sellOrders

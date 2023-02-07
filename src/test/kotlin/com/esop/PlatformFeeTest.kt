@@ -1,6 +1,6 @@
 package com.esop
 
-import com.esop.schema.PlatformFee
+import com.esop.service.PlatformFee
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

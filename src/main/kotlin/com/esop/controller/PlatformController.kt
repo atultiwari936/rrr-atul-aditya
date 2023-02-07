@@ -1,6 +1,6 @@
 package com.esop.controller
 
-import com.esop.schema.PlatformFee
+import com.esop.service.PlatformFee
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
