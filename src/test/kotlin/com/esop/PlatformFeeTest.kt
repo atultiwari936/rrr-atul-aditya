@@ -1,10 +1,14 @@
 package com.esop
 
 import com.esop.schema.PlatformFee
+import com.esop.schema.PlatformFee.Companion.deductPlatformFeeFrom
+import com.esop.schema.PlatformFee.Companion.getPlatformFee
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.math.BigInteger
+
 
 class PlatformFeeTest {
 
@@ -41,6 +45,30 @@ class PlatformFeeTest {
         }
 
         Assertions.assertEquals(BigInteger("0"), PlatformFee.getPlatformFee())
+    }
+
+    @Test
+    fun `it should deduct platform fee from the given amount as ESOP type is NON_PERFORMANCE`() {
+        val amount = 1000L
+
+        val actualAmount = deductPlatformFeeFrom(amount, "NON_PERFORMANCE")
+
+        val expectedAmount = 980L
+        val expectedPlatformFee = BigInteger("20")
+        assertEquals(expectedAmount, actualAmount)
+        assertEquals(expectedPlatformFee, getPlatformFee())
+    }
+
+    @Test
+    fun `it should not deduct platform fee from the given amount as ESOP type is PERFORMANCE`() {
+        val amount = 1000L
+
+        val actualAmount = deductPlatformFeeFrom(amount, "PERFORMANCE")
+
+        val expectedAmount = 1000L
+        val expectedPlatformFee = BigInteger("0")
+        assertEquals(expectedAmount, actualAmount)
+        assertEquals(expectedPlatformFee, getPlatformFee())
     }
 
 }
