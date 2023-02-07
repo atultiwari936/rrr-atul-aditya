@@ -2,6 +2,7 @@ package com.esop.service
 
 import com.esop.repository.UserRecords
 import com.esop.schema.Order
+import com.esop.schema.PlatformFee
 import com.esop.schema.User
 import com.esop.service.OrderService.Companion.buyOrders
 import com.esop.service.OrderService.Companion.sellOrders
@@ -16,11 +17,13 @@ class OrderServiceTest {
 
     private lateinit var userRecords:UserRecords
     private lateinit var orderService:OrderService
+    private lateinit var platformFee: PlatformFee
 
     @BeforeEach
     fun `It should create user`() {
         userRecords = UserRecords()
-        orderService = OrderService(userRecords)
+        platformFee = PlatformFee()
+        orderService = OrderService(userRecords, platformFee)
 
         val buyer1 = User("Sankaranarayanan", "M", "7550276216", "sankaranarayananm@sahaj.ai", "sankar")
         val buyer2 = User("Aditya", "Tiwari", "", "aditya@sahaj.ai", "aditya")

@@ -6,10 +6,11 @@ import com.esop.repository.UserRecords
 import com.esop.schema.*
 import jakarta.inject.Singleton
 
-private const val TWO_PERCENT = 0.02
-
 @Singleton
-class OrderService(private val userRecords: UserRecords) {
+class OrderService(
+    private val userRecords: UserRecords,
+    private val platformFee: PlatformFee
+) {
     companion object {
         private var orderId = 1L
 
@@ -49,7 +50,7 @@ class OrderService(private val userRecords: UserRecords) {
         buyer: User,
         seller: User
     ) {
-        val adjustedSellAmount = PlatformFee.deductPlatformFeeFrom(sellAmount, esopType)
+        val adjustedSellAmount = platformFee.deductPlatformFeeFrom(sellAmount, esopType)
 
         buyer.userWallet.removeMoneyFromLockedState(sellAmount)
         seller.userWallet.addMoneyToWallet(adjustedSellAmount)
