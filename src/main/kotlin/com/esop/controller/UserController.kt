@@ -6,7 +6,6 @@ import com.esop.dto.AddInventoryDTO
 import com.esop.dto.AddWalletDTO
 import com.esop.dto.CreateOrderDTO
 import com.esop.dto.UserCreationDTO
-import com.esop.schema.InventoryPriority
 import com.esop.schema.Order
 import com.esop.service.*
 import com.fasterxml.jackson.core.JsonProcessingException
@@ -83,21 +82,21 @@ class UserController {
     }
 
     @Post(uri = "/{userName}/order", consumes = [MediaType.APPLICATION_JSON], produces = [MediaType.APPLICATION_JSON])
-    fun order(userName: String, @Body @Valid body: CreateOrderDTO): Any? {
+    fun order(userName: String, @Body @Valid orderData: CreateOrderDTO): Any? {
         var errorList = mutableListOf<String>()
 
-        val orderType: String = body.type.toString().uppercase()
+        val orderType: String = orderData.type.toString().uppercase()
         var esopType = "NON_PERFORMANCE"
 
         if (orderType == "SELL") {
-            esopType = body.esopType.toString().uppercase()
+            esopType = orderData.esopType.toString().uppercase()
             if (esopType != "PERFORMANCE" && esopType != "NON_PERFORMANCE") {
                 errorList.add("Invalid inventory type")
                 return HttpResponse.ok(mapOf("errors" to errorList))
             }
         }
 
-        val order = Order(body.quantity!!.toLong(), body.type.toString().uppercase(), body.price!!.toLong(), userName)
+        val order = Order(orderData.quantity!!.toLong(), orderData.type.toString().uppercase(), orderData.price!!.toLong(), userName)
 
         errorList = userService.orderCheckBeforePlace(order)
         if (errorList.size > 0) {
@@ -109,9 +108,9 @@ class UserController {
             return HttpResponse.ok(
                 mapOf(
                     "orderId" to userOrderOrErrors["orderId"],
-                    "quantity" to body.quantity,
-                    "type" to body.type,
-                    "price" to body.price
+                    "quantity" to orderData.quantity,
+                    "type" to orderData.type,
+                    "price" to orderData.price
                 )
             )
         } else {
