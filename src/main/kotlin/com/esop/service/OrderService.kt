@@ -131,8 +131,8 @@ class OrderService(private val userRecords: UserRecords) {
         val orderExecutionPrice = sellOrder.getPrice()
         val orderExecutionQuantity = min(sellOrder.remainingQuantity, buyOrder.remainingQuantity)
 
-        buyOrder.updateRemainingQuantity(orderExecutionQuantity)
-        sellOrder.updateRemainingQuantity(orderExecutionQuantity)
+        buyOrder.subtractFromRemainingQuantity(orderExecutionQuantity)
+        sellOrder.subtractFromRemainingQuantity(orderExecutionQuantity)
 
         buyOrder.updateStatus()
         sellOrder.updateStatus()

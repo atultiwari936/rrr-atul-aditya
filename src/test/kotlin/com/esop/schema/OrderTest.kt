@@ -9,7 +9,7 @@ class OrderTest{
         val buy = Order(10,"BUY",10,"sankar")
         val expectedRemainingQuantity = 5L
 
-        buy.updateRemainingQuantity(5L)
+        buy.subtractFromRemainingQuantity(5L)
 
         assertEquals(expectedRemainingQuantity,buy.remainingQuantity)
     }
