@@ -3,11 +3,8 @@ package com.esop.service
 
 import com.esop.constant.errors
 import com.esop.repository.UserRecords
-import com.esop.schema.History
-import com.esop.schema.Order
-import com.esop.schema.OrderFilledLog
+import com.esop.schema.*
 import com.esop.schema.PlatformFee.Companion.addPlatformFee
-import com.esop.schema.User
 import jakarta.inject.Singleton
 import kotlin.math.min
 import kotlin.math.round
@@ -46,7 +43,7 @@ class OrderService(private val userRecords: UserRecords) {
         updateWalletBalances(sellAmount, platformFee, buyer, seller)
 
 
-        seller.transferLockedESOPsTo(buyer, sellerOrder.esopType, currentTradeQuantity)
+        seller.transferLockedESOPsTo(buyer, EsopTransferRequest(sellerOrder.esopType, currentTradeQuantity))
 
         val amountToBeReleased = (buyerOrder.getPrice() - sellerOrder.getPrice()) * (currentTradeQuantity)
         buyer.userWallet.moveMoneyFromLockedToFree(amountToBeReleased)
