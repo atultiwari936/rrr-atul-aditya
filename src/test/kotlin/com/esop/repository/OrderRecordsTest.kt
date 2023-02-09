@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class OrderRecordsTest{
-    lateinit var orderRecords: OrderRecords
+    private lateinit var orderRecords: OrderRecords
 
     @BeforeEach
     fun setup(){
